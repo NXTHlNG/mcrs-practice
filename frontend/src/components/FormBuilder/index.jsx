@@ -356,6 +356,7 @@ const FormBuilder = ({ onSave }) => {
                         sx={{ marginX: "auto", textAlign: "center" }}
                         onClick={() => {
                             let form = {
+                                alias: alias,
                                 title: title,
                                 description: description,
                                 items: data.map((item, i) => {
