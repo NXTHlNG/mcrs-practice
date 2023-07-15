@@ -61,7 +61,7 @@ func (r *FormRepository) FindById(id primitive.ObjectID) (model.Form, error) {
 func (r *FormRepository) Update(id primitive.ObjectID, form model.UpdateForm) (model.Form, error) {
 	result := model.Form{}
 
-	_, errUpdate := r.collection.UpdateByID(context.Background(), id, &form)
+	_, errUpdate := r.collection.UpdateOne(context.Background(), bson.D{{"_id", id}}, bson.M{"$set": form})
 	if errUpdate != nil {
 		return result, fmt.Errorf("resos.FormRepository.findById failed update error: %s", errUpdate)
 	}
@@ -111,4 +111,29 @@ func (r *FormRepository) GetAll() ([]model.FormResponse, error) {
 	}
 
 	return res, nil
+}
+
+func (r *FormRepository) GetIdByAlias(alias string) (primitive.ObjectID, error) {
+	filter := bson.D{{"alias", alias}}
+	opts := options.Find().SetProjection(bson.D{{"_id", 1}})
+
+	cur, err := r.collection.Find(context.Background(), filter, opts)
+	if err != nil {
+		return primitive.NilObjectID, err
+	}
+
+	var res []ResultId
+	if err := cur.All(context.Background(), &res); err != nil {
+		return primitive.NilObjectID, err
+	}
+
+	if len(res) != 1 {
+		return primitive.NilObjectID, fmt.Errorf("not found error")
+	}
+
+	return res[0].Id, nil
+}
+
+type ResultId struct {
+	Id primitive.ObjectID `bson:"_id"`
 }

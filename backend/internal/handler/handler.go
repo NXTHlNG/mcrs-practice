@@ -34,8 +34,8 @@ type Handler struct {
 
 type FormService interface {
 	Create(form model.CreateForm) (model.Form, error)
-	Update(id primitive.ObjectID, form model.UpdateForm) (model.Form, error)
-	Delete(id primitive.ObjectID) error
+	Update(alias string, form model.UpdateForm) (model.Form, error)
+	Delete(alias string) error
 	FindById(id primitive.ObjectID) (model.Form, error)
 	FindByAlias(alias string) (model.Form, error)
 	GetAll() ([]model.FormResponse, error)
@@ -71,7 +71,9 @@ func (h *Handler) InitRoutes() *chi.Mux {
 		r.Route("/form", func(r chi.Router) {
 			r.Get("/", h.getAll)
 			r.Post("/", h.createForm)
-			r.Route("/{id}", func(r chi.Router) {
+			r.Route("/{alias}", func(r chi.Router) {
+				r.Put("/", h.updateForm)
+				r.Delete("/", h.deleteForm)
 				r.Get("/", h.getFormByAlias)
 			})
 		})
