@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
-import uuid from "react-uuid";
 import Nestable from "react-nestable";
+import uuid from "react-uuid";
 //Material UI Components
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
@@ -8,16 +8,15 @@ import Tooltip from "@material-ui/core/Tooltip";
 //Icons
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 //Form Elements
+import { formEl } from "./constants.js";
 import {
-  TextFieldInput,
-  TextArea,
+  DateInput,
   NumberInput,
   RadioInput,
-  DateInput,
+  TextArea,
+  TextFieldInput,
   TimeInput,
 } from "./elements";
-import Layout from './elements/layout'
-import { formEl } from "./constants.js";
 //Components
 import Header from "./Header";
 
@@ -25,7 +24,7 @@ const FormBuilder = () => {
   const initVal = formEl[0]?.value;
 
   //State
-  const [title, setTitle] = useState("Untitled Form");
+  const [title, setTitle] = useState("Новая форма");
   const [description, setDescription] = useState("");
   const [data, setData] = useState([]);
   const [formData, setFormData] = useState("text");
@@ -276,7 +275,7 @@ const FormBuilder = () => {
           />
         </Grid>
         <Grid item md={1}>
-          <Tooltip title="Add Element" aria-label="add-element">
+          <Tooltip title="Добавить элемент" aria-label="add-element">
             <IconButton
               aria-label="add-element"
               onClick={addElement}

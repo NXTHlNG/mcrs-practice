@@ -1,25 +1,25 @@
-import {  Fragment } from "react";
+import { Fragment } from "react";
 import uuid from "react-uuid";
 //Material UI Components
-import TextField from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
-import Paper from "@material-ui/core/Paper";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Switch from "@material-ui/core/Switch";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import Grid from "@material-ui/core/Grid";
-import MenuItem from "@material-ui/core/MenuItem";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
 import Button from "@material-ui/core/Button";
+import Divider from "@material-ui/core/Divider";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormGroup from "@material-ui/core/FormGroup";
+import Grid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import Paper from "@material-ui/core/Paper";
+import Select from "@material-ui/core/Select";
+import Switch from "@material-ui/core/Switch";
+import TextField from "@material-ui/core/TextField";
+import Tooltip from "@material-ui/core/Tooltip";
 
 //Icons
-import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 //Form Elements
@@ -64,7 +64,7 @@ const RadioInput = ({
                 onBlur={(e) => handleValue(item.id, e)}
                 fullWidth
                 required={item.required}
-                placeholder="Radio Label"
+                placeholder="Заголовок"
                 sx={{ mb: 2 }}
               />
               {item.options &&
@@ -74,7 +74,7 @@ const RadioInput = ({
                     <TextField
                       variant="outlined"
                       fullWidth
-                      placeholder={`Radio Option ${key + 1}`}
+                      placeholder={`Вариант ответа ${key + 1}`}
                       defaultValue={opt?.value}
                       key={opt?.id}
                       sx={{ mb: 1 }}
@@ -82,7 +82,7 @@ const RadioInput = ({
                         handleOptionValues(item?.id, opt?.id, e.target.value)
                       }
                     />
-                    <Tooltip title="Delete Option" aria-label="delete-option">
+                    <Tooltip title="Удалить вариант" aria-label="delete-option">
                       <IconButton
                         aria-label="delete-option"
                         onClick={() => deleteOption(item.id,opt?.id)}
@@ -94,7 +94,7 @@ const RadioInput = ({
                   </Box>
                 ))}
               <Button variant="text" onClick={() => createNewOption(item.id)}>
-                Add Option
+                Добавить вариант
               </Button>
             </Grid>
             <Grid item xs={3}>
@@ -120,7 +120,7 @@ const RadioInput = ({
         </Box>
         <Divider light />
         <FormGroup row sx={{ alignItems: "center" }}>
-          <Tooltip title="Delete Element" aria-label="delete-element">
+          <Tooltip title="Удалить элемент" aria-label="delete-element">
             <IconButton
               aria-label="delete-element"
               onClick={() => deleteEl(item.id)}
@@ -129,7 +129,7 @@ const RadioInput = ({
               <DeleteOutlineOutlinedIcon color="secondary" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Duplicate Element" aria-label="duplicate-element">
+          <Tooltip title="Дублировать элемент" aria-label="duplicate-element">
             <IconButton
               aria-label="duplicate-element"
               onClick={() => duplicateElement(item.id,item.type)}
@@ -148,7 +148,7 @@ const RadioInput = ({
                 color="secondary"
               />
             }
-            label="Required"
+            label="Обязательно"
             sx={{ ml: 2 }}
           />
         </FormGroup>
