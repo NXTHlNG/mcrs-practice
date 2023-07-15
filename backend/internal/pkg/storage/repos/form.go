@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"server/internal/model"
 )
 
@@ -94,4 +95,20 @@ func (r *FormRepository) ExistsByAlias(alias string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (r *FormRepository) GetAll() ([]model.FormResponse, error) {
+	var res []model.FormResponse
+	opts := options.Find().SetProjection(bson.D{{"items", 0}})
+
+	cur, err := r.collection.Find(context.Background(), bson.D{{}}, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(context.Background(), &res); err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
