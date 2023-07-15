@@ -59,6 +59,7 @@ func (h *Handler) InitRoutes() *chi.Mux {
 
 	r.Use(cors.Handler(cors.Options{
 		AllowOriginFunc: func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:  []string{"GET", "POST", "PUT", "DELETE"},
 	}))
 	r.Use(middleware.DefaultLogger)
 	r.Use(render.SetContentType(render.ContentTypeJSON))
