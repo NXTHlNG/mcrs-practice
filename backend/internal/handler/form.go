@@ -8,6 +8,22 @@ import (
 	"server/internal/model"
 )
 
+func (h *Handler) getAll(w http.ResponseWriter, r *http.Request) {
+	res, err := h.formService.GetAll()
+	if err != nil {
+		err := render.Render(w, r, ErrBadRequest)
+		if err != nil {
+			log.Println("Error rendering")
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = w.Write([]byte("bad request"))
+		}
+		log.Println(err)
+		return
+	}
+
+	render.JSON(w, r, &res)
+}
+
 func (h *Handler) getFormByAlias(w http.ResponseWriter, r *http.Request) {
 	alias := chi.URLParam(r, "id")
 

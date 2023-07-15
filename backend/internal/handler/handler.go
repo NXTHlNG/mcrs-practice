@@ -38,6 +38,7 @@ type FormService interface {
 	Delete(id primitive.ObjectID) error
 	FindById(id primitive.ObjectID) (model.Form, error)
 	FindByAlias(alias string) (model.Form, error)
+	GetAll() ([]model.FormResponse, error)
 }
 
 type AnswerService interface {
@@ -68,6 +69,7 @@ func (h *Handler) InitRoutes() *chi.Mux {
 	})
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/form", func(r chi.Router) {
+			r.Get("/", h.getAll)
 			r.Post("/", h.createForm)
 			r.Route("/{id}", func(r chi.Router) {
 				r.Get("/", h.getFormByAlias)
