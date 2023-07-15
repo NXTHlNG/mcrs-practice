@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
@@ -55,6 +56,9 @@ func New(fs FormService, as AnswerService) *Handler {
 func (h *Handler) InitRoutes() *chi.Mux {
 	r := chi.NewRouter()
 
+	r.Use(cors.Handler(cors.Options{
+		AllowOriginFunc: func(r *http.Request, origin string) bool { return true },
+	}))
 	r.Use(middleware.DefaultLogger)
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
@@ -73,7 +77,7 @@ func (h *Handler) InitRoutes() *chi.Mux {
 			r.Get("/", h.getAnswerByFormId)
 			r.Post("/", h.createAnswer)
 			r.Route("/{id}", func(r chi.Router) {
-				
+
 			})
 		})
 	})

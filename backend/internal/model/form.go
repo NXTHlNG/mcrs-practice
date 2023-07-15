@@ -9,7 +9,7 @@ var (
 	Date     ItemType = "date"
 	Time     ItemType = "time"
 	Radio    ItemType = "radio"
-	Chackbox ItemType = "chackbox"
+	Checkbox ItemType = "checkbox"
 )
 
 type ItemType string
@@ -41,6 +41,12 @@ type Item struct {
 	Type     ItemType  `json:"type" bson:"type" binding:"required"`
 	Required bool      `json:"required" bson:"required:" binding:"required"`
 	Options  []Options `json:"options" bson:"options"`
+}
+
+type FormResponse struct {
+	Title       string `json:"title" bson:"title"`
+	Description string `json:"description" bson:"description"`
+	Alias       string `json:"alias" bson:"alias"`
 }
 
 type Options struct {

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"server/internal/model"
 	"server/internal/pkg/helper/alias"
@@ -17,6 +18,7 @@ type FormRepository interface {
 	Update(id primitive.ObjectID, form model.UpdateForm) (model.Form, error)
 	Delete(id primitive.ObjectID) error
 	ExistsByAlias(alias string) (bool, error)
+	GetAll() ([]model.FormResponse, error)
 }
 
 func (s *FormService) Update(id primitive.ObjectID, form model.UpdateForm) (model.Form, error) {
@@ -56,6 +58,16 @@ func (s *FormService) FindById(id primitive.ObjectID) (model.Form, error) {
 
 func (s *FormService) Delete(id primitive.ObjectID) error {
 	return s.formRepository.Delete(id)
+}
+
+func (s *FormService) GetAll() ([]model.FormResponse, error) {
+	res, err := s.formRepository.GetAll()
+
+	if err != nil {
+		return nil, fmt.Errorf("service.form.GetAll failed: %s", err)
+	}
+
+	return res, nil
 }
 
 func NewForm(r FormRepository) *FormService {
