@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 	"server/internal/model"
 	"server/internal/pkg/helper/alias"
 )
@@ -19,9 +20,20 @@ type FormRepository interface {
 	Delete(id primitive.ObjectID) error
 	ExistsByAlias(alias string) (bool, error)
 	GetAll() ([]model.FormResponse, error)
+	GetIdByAlias(alias string) (primitive.ObjectID, error)
 }
 
-func (s *FormService) Update(id primitive.ObjectID, form model.UpdateForm) (model.Form, error) {
+func (s *FormService) Update(alias string, form model.UpdateForm) (model.Form, error) {
+	id, err := s.formRepository.GetIdByAlias(alias)
+	log.Println(id, err)
+	if err != nil {
+		return model.Form{}, fmt.Errorf("service.Form.Update get alias by id failed: %s", err)
+	}
+
+	if id == primitive.NilObjectID {
+		return model.Form{}, fmt.Errorf("service.Form.Update not found by alias")
+	}
+
 	return s.formRepository.Update(id, form)
 }
 
@@ -56,7 +68,16 @@ func (s *FormService) FindById(id primitive.ObjectID) (model.Form, error) {
 	return s.formRepository.FindById(id)
 }
 
-func (s *FormService) Delete(id primitive.ObjectID) error {
+func (s *FormService) Delete(alias string) error {
+	id, err := s.formRepository.GetIdByAlias(alias)
+	if err != nil {
+		return fmt.Errorf("service.Form.Update get alias by id failed: %s", err)
+	}
+
+	if id == primitive.NilObjectID {
+		return fmt.Errorf("service.Form.Update not found by alias")
+	}
+
 	return s.formRepository.Delete(id)
 }
 
