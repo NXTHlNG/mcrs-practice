@@ -1,7 +1,7 @@
-import { Fragment, useState } from "react";
 import Box from "@material-ui/core/Box";
-import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
+import TextField from "@material-ui/core/TextField";
+import { Fragment } from "react";
 
 const Header = ({ title, description, setTitle, setDescription }) => {
     return (
@@ -14,7 +14,7 @@ const Header = ({ title, description, setTitle, setDescription }) => {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         variant="standard"
-                        placeholder="Form Title"
+                        placeholder="Название формы"
                         name="title"
                         sx={{ mb: 3 }}
                         fullWidth
@@ -24,7 +24,7 @@ const Header = ({ title, description, setTitle, setDescription }) => {
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         variant="standard"
-                        placeholder="Form Description"
+                        placeholder="Описание формы"
                         fullWidth
                         sx={{ mb: 2 }}
                         multiline
