@@ -7,22 +7,7 @@ import FormCard from "./elements/FormCard";
 import AddIcon from "@mui/icons-material/Add";
 import { redirect, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-}));
-
-const bull = (
-    <Box
-        component="span"
-        sx={{ display: "inline-block", mx: "2px", transform: "scale(0.8)" }}>
-        •
-    </Box>
-);
+import { useSnackbar } from "notistack";
 
 const MainPage = () => {
     const [forms, setForms] = useState([
@@ -30,6 +15,30 @@ const MainPage = () => {
     ]);
 
     const navigate = useNavigate();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+    const onEdit = (alias) => {
+        navigate(`/form/edit/${alias}`);
+    };
+
+    const onDelete = (id, alias) => {
+        console.log(id);
+        FormService.delete(alias)
+            .then(() => {
+                setForms((prevState) => {
+                    return prevState.filter((v) => v.alias !== alias);
+                });
+            })
+            .catch(() =>
+                enqueueSnackbar("Не удалось удалить форму", {
+                    variant: "error",
+                })
+            );
+    };
+
+    const onOpenForm = (alias) => {
+        navigate(`/form/${alias}`);
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -44,6 +53,9 @@ const MainPage = () => {
                 }
             } catch (err) {
                 console.error(err);
+                enqueueSnackbar("Ошибка загрузки форм", {
+                    variant: "error",
+                });
             }
         };
 
@@ -64,11 +76,20 @@ const MainPage = () => {
                 marginX: "auto",
             }}>
             <Grid container spacing={2}>
-                {forms.map((form) => (
+                {forms.map((form, i) => (
                     <Grid item xs={3} key={form.alias}>
                         <FormCard
                             title={form.title}
                             description={form.description}
+                            onEdit={() => {
+                                onEdit(form.alias);
+                            }}
+                            onOpenForm={() => {
+                                onOpenForm(form.alias);
+                            }}
+                            onDelete={() => {
+                                onDelete(i, form.alias);
+                            }}
                         />
                     </Grid>
                 ))}

@@ -7,7 +7,16 @@ export const FormService = {
     },
 
     async get(alias) {
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/form/${alias}`);
+        const res = await axios.get(
+            `${process.env.REACT_APP_API_URL}/form/${alias}`
+        );
+        return res.data;
+    },
+
+    async delete(alias) {
+        const res = await axios.delete(
+            `${process.env.REACT_APP_API_URL}/form/${alias}`
+        );
         return res.data;
     },
 
@@ -28,6 +37,7 @@ export const FormService = {
     },
 
     async answer(data) {
+        console.log(data);
         const res = await axios.post(
             `${process.env.REACT_APP_API_URL}/answer`,
             data

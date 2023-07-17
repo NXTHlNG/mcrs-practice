@@ -7,30 +7,34 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ShareIcon from "@mui/icons-material/Share";
 import DownloadIcon from "@mui/icons-material/Download";
 import { IconButton } from "@material-ui/core";
+import { CardActionArea } from "@mui/material";
 
-const FormCard = ({ title, description }) => {
+const FormCard = ({ title, description, onEdit, onOpenForm, onDelete }) => {
     return (
         <Card sx={{ minWidth: 275 }}>
-            <CardContent sx={{ minHeight: 50 }}>
-                {/* <Typography
-                    sx={{ fontSize: 14 }}
-                    color="text.secondary"
-                    gutterBottom>
-                    Form Title
-                </Typography> */}
-                <Typography variant="h5" component="div">
-                    {title}
-                </Typography>
-                {/* <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    adjective
-                </Typography> */}
-                <Typography variant="body2">{description}</Typography>
-            </CardContent>
+            <CardActionArea onClick={onOpenForm}>
+                <CardContent sx={{ minHeight: 50 }}>
+                    <Typography variant="h5" component="div">
+                        {title}
+                    </Typography>
+                    <Typography
+                        sx={{
+                            display: "-webkit-box",
+                            overflow: "hidden",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 2,
+                            height: 50,
+                        }}
+                        variant="body2">
+                        {description}
+                    </Typography>
+                </CardContent>
+            </CardActionArea>
             <CardActions>
-                <IconButton>
+                <IconButton onClick={onEdit}>
                     <EditIcon></EditIcon>
                 </IconButton>
-                <IconButton>
+                <IconButton onClick={onDelete}>
                     <DeleteIcon></DeleteIcon>
                 </IconButton>
                 <IconButton>

@@ -24,18 +24,23 @@ import { useParams } from "react-router-dom";
 import { Button, Box } from "@material-ui/core";
 import AddIcon from "@mui/icons-material/Add";
 import { FormService } from "../../services/FormService";
+import { useSnackbar } from "notistack";
+import { useNavigate } from "react-router-dom";
 
 const FormBuilder = ({ onSave }) => {
     const initVal = formEl[0]?.value;
 
     //State
-    const [title, setTitle] = useState();
+    const [title, setTitle] = useState("Новая форма");
     const [description, setDescription] = useState();
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState("text");
 
     const items = data;
     const { alias } = useParams();
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         let isMounted = true;
@@ -48,8 +53,6 @@ const FormBuilder = ({ onSave }) => {
                 if (isMounted) {
                     setTitle(data.title);
                     setDescription(data.description);
-                    console.log("xxxx " + title);
-                    console.log("xxxx " + description);
                     setData(
                         data.items.map((item) => {
                             const newItem = {
@@ -379,9 +382,19 @@ const FormBuilder = ({ onSave }) => {
                                 }),
                             };
 
-                            console.log(form);
-
-                            onSave(form);
+                            onSave(form)
+                                .then(() => {
+                                    enqueueSnackbar("Форма сохранена", {
+                                        variant: "success",
+                                    });
+                                    navigate("/");
+                                })
+                                .catch((err) => {
+                                    enqueueSnackbar("Ошибка сохранения", {
+                                        variant: "error",
+                                    });
+                                    console.error(err);
+                                });
                         }}>
                         Сохранить
                     </Button>
