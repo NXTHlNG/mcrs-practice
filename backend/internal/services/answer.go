@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"server/internal/model"
+	"server/internal/pkg/helper/converter"
 )
 
 type AnswerService struct {
@@ -20,6 +21,22 @@ func NewAnswer(r AnswerRepository) *AnswerService {
 	return &AnswerService{
 		answerRepository: r,
 	}
+}
+
+func (s *AnswerService) GetStatisticsByFormId(formId string) (string, error) {
+	res, err := s.answerRepository.GetAllByFormId(formId)
+
+	if err != nil {
+		return "", fmt.Errorf("service.Answer.GetAllByFormId failed: %v", err)
+	}
+
+	name, err := converter.ToExcel(res)
+
+	if err != nil {
+		return "", fmt.Errorf("service.Answer.GetAllByFormId converted failed: %v", err)
+	}
+
+	return name, nil
 }
 
 func (r *AnswerService) Create(answer model.CreateAnswer) (model.Answer, error) {

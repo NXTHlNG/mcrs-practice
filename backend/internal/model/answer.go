@@ -17,8 +17,8 @@ type CreateAnswer struct {
 
 type AnswerItem struct {
 	FormsItemId string `json:"id" bson:"id" binding:"required"`
-	Title       string `json:"title", bson:"title", binding:"required"`
-	Value       any `json:"value" bson:"value" binding:"required"`
+	Title       string `json:"title" bson:"title" binding:"required"`
+	Value       any    `json:"value" bson:"value" binding:"required"`
 }
 
 type GetAnswerRequest struct {
