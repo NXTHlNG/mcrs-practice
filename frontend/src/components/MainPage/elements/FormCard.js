@@ -8,8 +8,27 @@ import ShareIcon from "@mui/icons-material/Share";
 import DownloadIcon from "@mui/icons-material/Download";
 import { IconButton } from "@material-ui/core";
 import { CardActionArea } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import { useState } from "react";
 
-const FormCard = ({ title, description, onEdit, onOpenForm, onDelete }) => {
+const FormCard = ({
+    title,
+    description,
+    onEdit,
+    onOpenForm,
+    onDelete,
+    onShare,
+}) => {
+    const [open, setOpen] = useState(false);
+
+    const handleTooltipClose = () => {
+        setOpen(false);
+    };
+
+    const handleTooltipOpen = () => {
+        setOpen(true);
+    };
     return (
         <Card sx={{ minWidth: 275 }}>
             <CardActionArea onClick={onOpenForm}>
@@ -37,9 +56,28 @@ const FormCard = ({ title, description, onEdit, onOpenForm, onDelete }) => {
                 <IconButton onClick={onDelete}>
                     <DeleteIcon></DeleteIcon>
                 </IconButton>
-                <IconButton>
-                    <ShareIcon></ShareIcon>
-                </IconButton>
+                <ClickAwayListener onClickAway={handleTooltipClose}>
+                    <Tooltip
+                        PopperProps={{
+                            disablePortal: true,
+                        }}
+                        onClose={handleTooltipClose}
+                        open={open}
+                        disableFocusListener
+                        disableHoverListener
+                        disableTouchListener
+                        placement="bottom"
+                        title="Ссылка скопирована">
+                        <IconButton
+                            onClick={() => {
+                                handleTooltipOpen();
+                                onShare();
+                            }}>
+                            <ShareIcon></ShareIcon>
+                        </IconButton>
+                    </Tooltip>
+                </ClickAwayListener>
+
                 <IconButton>
                     <DownloadIcon></DownloadIcon>
                 </IconButton>

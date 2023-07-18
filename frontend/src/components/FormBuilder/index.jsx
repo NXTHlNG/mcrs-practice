@@ -1,8 +1,6 @@
-
 import { Fragment, useState, useEffect } from "react";
 import uuid from "react-uuid";
 import Nestable from "react-nestable";
-import uuid from "react-uuid";
 //Material UI Components
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
@@ -10,7 +8,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 //Icons
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 //Form Elements
-import { formEl } from "./constants.js";
 import {
     TextFieldInput,
     TextArea,
@@ -32,7 +29,6 @@ import { useNavigate } from "react-router-dom";
 
 const FormBuilder = ({ onSave }) => {
     const initVal = formEl[0]?.value;
-
 
     //State
     const [title, setTitle] = useState("Новая форма");

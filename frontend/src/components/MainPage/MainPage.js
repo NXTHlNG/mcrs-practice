@@ -21,6 +21,14 @@ const MainPage = () => {
         navigate(`/form/edit/${alias}`);
     };
 
+    const onShare = (alias) => {
+        navigator.clipboard.writeText(`${window.location.host}/form/${alias}`);
+    };
+
+    const onDownload = () => {
+        //
+    }
+
     const onDelete = (id, alias) => {
         console.log(id);
         FormService.delete(alias)
@@ -89,6 +97,12 @@ const MainPage = () => {
                             }}
                             onDelete={() => {
                                 onDelete(i, form.alias);
+                            }}
+                            onShare={() => {
+                                onShare(form.alias);
+                            }}
+                            onDownload={() => {
+                                onDownload()
                             }}
                         />
                     </Grid>

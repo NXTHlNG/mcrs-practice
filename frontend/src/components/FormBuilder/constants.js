@@ -12,7 +12,7 @@ export const formEl = [
     value: "number",
   },
   {
-    label: "Опрос",
+    label: "Один из списка",
     value: "radio",
   },
   {
