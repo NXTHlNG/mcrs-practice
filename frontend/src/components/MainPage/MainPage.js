@@ -8,29 +8,30 @@ import AddIcon from "@mui/icons-material/Add";
 import { redirect, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const MainPage = () => {
-    const [forms, setForms] = useState([
-        { title: "default", description: "default", alias: "0" },
-    ]);
+    const [forms, setForms] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
     const onEdit = (alias) => {
-        navigate(`/form/edit/${alias}`);
+        navigate(`/admin/form/edit/${alias}`);
     };
 
     const onShare = (alias) => {
         navigator.clipboard.writeText(`${window.location.host}/form/${alias}`);
     };
 
-    const onDownload = () => {
-        //
-    }
+    const onDownload = (alias) => {
+        FormService.download(alias).catch((err) =>
+            enqueueSnackbar("Ошибка скачивания", { variant: "error" })
+        );
+    };
 
     const onDelete = (id, alias) => {
-        console.log(id);
         FormService.delete(alias)
             .then(() => {
                 setForms((prevState) => {
@@ -55,16 +56,16 @@ const MainPage = () => {
         const getForms = async () => {
             try {
                 const data = await FormService.getAll();
-                console.log(data);
-                if (isMounted) {
+                if (isMounted && data?.length) {
                     setForms((prevState) => [...data, ...prevState]);
                 }
             } catch (err) {
-                console.error(err);
+                console.log(err);
                 enqueueSnackbar("Ошибка загрузки форм", {
                     variant: "error",
                 });
             }
+            setIsLoading(false);
         };
 
         if (isMounted) {
@@ -76,6 +77,20 @@ const MainPage = () => {
             controller.abort();
         };
     }, []);
+
+    if (isLoading) {
+        return (
+            <Box
+                sx={{
+                    height: "100vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <Box
@@ -102,7 +117,7 @@ const MainPage = () => {
                                 onShare(form.alias);
                             }}
                             onDownload={() => {
-                                onDownload()
+                                onDownload(form.alias);
                             }}
                         />
                     </Grid>
@@ -121,7 +136,7 @@ const MainPage = () => {
                             sx={{
                                 width: "100%",
                             }}
-                            onClick={() => navigate("/form/create")}>
+                            onClick={() => navigate("/admin/form/create")}>
                             <AddIcon fontSize="large"></AddIcon>
                         </IconButton>
                     </Paper>

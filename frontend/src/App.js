@@ -10,13 +10,13 @@ import "react-nestable/dist/styles/index.css";
 const App = () => {
     return (
         <Routes>
-            <Route path="" element={<MainPage />} />
+            <Route path="/admin" element={<MainPage />} />
             <Route
-                path="/form/edit/:alias"
+                path="/admin/form/edit/:alias"
                 element={<FormBuilder onSave={FormService.update} />}
             />
             <Route
-                path="/form/create"
+                path="/admin/form/create"
                 element={<FormBuilder onSave={FormService.create} />}
             />
             <Route path="/form/:alias" element={<FormPage />} />

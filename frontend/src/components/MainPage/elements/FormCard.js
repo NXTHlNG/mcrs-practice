@@ -19,6 +19,7 @@ const FormCard = ({
     onOpenForm,
     onDelete,
     onShare,
+    onDownload,
 }) => {
     const [open, setOpen] = useState(false);
 
@@ -77,8 +78,7 @@ const FormCard = ({
                         </IconButton>
                     </Tooltip>
                 </ClickAwayListener>
-
-                <IconButton>
+                <IconButton onClick={onDownload}>
                     <DownloadIcon></DownloadIcon>
                 </IconButton>
             </CardActions>

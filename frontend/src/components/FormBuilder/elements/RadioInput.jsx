@@ -103,7 +103,7 @@ const RadioInput = ({
                 <Select
                   labelId="el-type-label"
                   id="el-type"
-                  label="Type"
+                  label="Тип"
                   value={item.type}
                   onChange={(e) => handleElType(item.id, e.target.value)}
                 >

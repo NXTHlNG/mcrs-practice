@@ -37,11 +37,33 @@ export const FormService = {
     },
 
     async answer(data) {
-        console.log(data);
         const res = await axios.post(
             `${process.env.REACT_APP_API_URL}/answer`,
             data
         );
+        return res.data;
+    },
+
+    async download(alias) {
+        const res = await axios.get(
+            `${process.env.REACT_APP_API_URL}/download/${alias}`,
+            {
+                responseType: "blob",
+            }
+        );
+        const href = window.URL.createObjectURL(res.data);
+
+        const anchorElement = document.createElement("a");
+
+        anchorElement.href = href;
+        anchorElement.download = alias;
+
+        document.body.appendChild(anchorElement);
+        anchorElement.click();
+
+        document.body.removeChild(anchorElement);
+        window.URL.revokeObjectURL(href);
+
         return res.data;
     },
 };

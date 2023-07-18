@@ -16,6 +16,10 @@ export const formEl = [
     value: "radio",
   },
   {
+    label: "Несколько из списка",
+    value: "checkbox",
+  },
+  {
     label: "Дата",
     value: "date",
   },

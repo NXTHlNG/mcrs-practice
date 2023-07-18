@@ -11,6 +11,8 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
+    FormGroup,
+    Checkbox,
 } from "@material-ui/core";
 import AddIcon from "@mui/icons-material/Add";
 import { FormService } from "../../services/FormService";
@@ -20,6 +22,7 @@ import Input from "@material-ui/core/Input";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers";
 import { redirect, useNavigate } from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const FormPage = () => {
     const { alias } = useParams();
@@ -28,6 +31,8 @@ const FormPage = () => {
     const [description, setDescription] = useState();
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState("text");
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
@@ -35,10 +40,6 @@ const FormPage = () => {
     const { control, handleSubmit } = useForm();
     const onSubmit = (data) => {
         console.log(data);
-        console.log(typeof data);
-        console.log(Object.entries(data));
-        console.log(formId);
-
         FormService.answer({
             user_id: "1",
             form_id: formId,
@@ -57,7 +58,8 @@ const FormPage = () => {
                 });
                 navigate("/form/response");
             })
-            .catch(() => {
+            .catch((err) => {
+                setError(err);
                 enqueueSnackbar("Ошибка сохранения", {
                     variant: "error",
                 });
@@ -83,8 +85,6 @@ const FormPage = () => {
         const getForm = async () => {
             try {
                 const data = await FormService.get(alias);
-                console.log(data);
-                console.log(formId);
                 if (isMounted) {
                     setFormId(data.id);
                     setTitle(data.title);
@@ -92,8 +92,12 @@ const FormPage = () => {
                     setData(data.items);
                 }
             } catch (err) {
-                console.error(err);
+                setError(err);
+                if (err?.response?.status !== 404) {
+                    enqueueSnackbar("Ошибка загрузки", { variant: "error" });
+                }
             }
+            setIsLoading(false);
         };
 
         if (isMounted) {
@@ -106,7 +110,25 @@ const FormPage = () => {
         };
     }, []);
 
-    return (
+    if (isLoading) {
+        return (
+            <Box
+                sx={{
+                    height: "100vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    return error?.response?.status == 404 ? (
+        <Typography align="center" variant="h5">
+            Форма не найдена
+        </Typography>
+    ) : (
         <Box width={800} marginX="auto">
             <Typography variant="h4">{title}</Typography>
             <Typography variant="body1" marginBottom={5}>
@@ -120,7 +142,7 @@ const FormPage = () => {
                                 return (
                                     <>
                                         <Typography>
-                                            {item.id + 1}. Title
+                                            {item.id + 1}. {item.title}
                                         </Typography>
                                         <Controller
                                             name={makeId(item.title, item.id)}
@@ -139,7 +161,7 @@ const FormPage = () => {
                                 return (
                                     <>
                                         <Typography>
-                                            {item.id + 1}. Title
+                                            {item.id + 1}. {item.title}
                                         </Typography>
                                         <Controller
                                             name={makeId(item.title, item.id)}
@@ -160,7 +182,7 @@ const FormPage = () => {
                                 return (
                                     <>
                                         <Typography>
-                                            {item.id + 1}. Title
+                                            {item.id + 1}. {item.title}
                                         </Typography>
                                         <Controller
                                             name={makeId(item.title, item.id)}
@@ -185,7 +207,7 @@ const FormPage = () => {
                                 return (
                                     <>
                                         <Typography>
-                                            {item.id + 1}. Title
+                                            {item.id + 1}. {item.title}
                                         </Typography>
                                         <Controller
                                             name={makeId(item.title, item.id)}
@@ -195,10 +217,7 @@ const FormPage = () => {
                                                     <FormLabel>
                                                         {item.title}
                                                     </FormLabel>
-                                                    <RadioGroup
-                                                        aria-labelledby="demo-radio-buttons-group-label"
-                                                        defaultValue="female"
-                                                        name="radio-buttons-group">
+                                                    <RadioGroup name="radio-buttons-group">
                                                         {item.options?.map(
                                                             (item) => {
                                                                 return (
@@ -222,11 +241,55 @@ const FormPage = () => {
                                         />
                                     </>
                                 );
+                            case "checkbox":
+                                return (
+                                    <>
+                                        <Typography>
+                                            {item.id + 1}. {item.title}
+                                        </Typography>
+                                        {/* <FormControlLabel
+                                            control={
+                                                <Controller
+                                                    name="multiCheckbox.option1"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Checkbox {...field} />
+                                                    )}
+                                                />
+                                            }
+                                            label="option 1"
+                                        /> */}
+                                        {item.options?.map((item, i) => {
+                                            console.log(item);
+                                            return (
+                                                <FormControlLabel
+                                                    control={
+                                                        <Controller
+                                                            name={makeId(
+                                                                item.value,
+                                                                item.id
+                                                            )}
+                                                            control={control}
+                                                            render={({
+                                                                field,
+                                                            }) => (
+                                                                <Checkbox
+                                                                    {...field}
+                                                                />
+                                                            )}
+                                                        />
+                                                    }
+                                                    label={item.value}
+                                                />
+                                            );
+                                        })}
+                                    </>
+                                );
                             case "date":
                                 return (
                                     <>
                                         <Typography>
-                                            {item.id + 1}. Title
+                                            {item.id + 1}. {item.title}
                                         </Typography>
                                         <Controller
                                             name={makeId(item.title, item.id)}
@@ -244,7 +307,7 @@ const FormPage = () => {
                                 return (
                                     <>
                                         <Typography>
-                                            {item.id + 1}. Title
+                                            {item.id + 1}. {item.title}
                                         </Typography>
                                         <Controller
                                             name={makeId(item.title, item.id)}
