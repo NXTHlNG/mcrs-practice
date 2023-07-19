@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
+
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
@@ -12,8 +13,10 @@ type Config struct {
 }
 
 type Mongo struct {
-	Uri    string `yaml:"uri"`
-	DBName string `yaml:"db-name"`
+	Uri      string `yaml:"uri" env:"DB_URI"`
+	DBName   string `yaml:"db-name"`
+	Username string `yaml:"db-user" env:"DB_USERNAME"`
+	Password string `yaml:"db-password" env:"DB_PASSWORD"`
 }
 
 type Server struct {

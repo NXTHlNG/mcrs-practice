@@ -15,7 +15,7 @@ func main() {
 	cfg := config.MustLoad()
 	log.Printf("init config %v\n", cfg)
 
-	st := storage.New(cfg.Uri)
+	st := storage.New(cfg.Uri, cfg.Username, cfg.Password)
 	log.Println("init storage")
 
 	rf := repos.NewForm(st)

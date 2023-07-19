@@ -1,26 +1,30 @@
 export const formEl = [
   {
-    label: "Text",
+    label: "Текст (строка)",
     value: "text",
   },
   {
-    label: "TextArea",
+    label: "Текст (абзац)",
     value: "textarea",
   },
   {
-    label: "Number",
+    label: "Число",
     value: "number",
   },
   {
-    label: "Radio",
+    label: "Один из списка",
     value: "radio",
   },
   {
-    label: "Date",
+    label: "Несколько из списка",
+    value: "checkbox",
+  },
+  {
+    label: "Дата",
     value: "date",
   },
   {
-    label: "Time",
+    label: "Время",
     value: "time",
   }
 ];

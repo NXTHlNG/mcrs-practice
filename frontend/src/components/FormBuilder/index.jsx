@@ -6,7 +6,6 @@ import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 //Icons
-import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 //Form Elements
 import {
     TextFieldInput,
@@ -16,8 +15,8 @@ import {
     DateInput,
     TimeInput,
 } from "./elements";
-import Layout from "./elements/layout";
 import { formEl } from "./constants.js";
+import { Typography } from "@material-ui/core";
 //Components
 import Header from "./Header";
 import { useParams } from "react-router-dom";
@@ -26,6 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { FormService } from "../../services/FormService";
 import { useSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const FormBuilder = ({ onSave }) => {
     const initVal = formEl[0]?.value;
@@ -35,6 +35,8 @@ const FormBuilder = ({ onSave }) => {
     const [description, setDescription] = useState();
     const [data, setData] = useState([]);
     const [formData, setFormData] = useState("text");
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const items = data;
     const { alias } = useParams();
@@ -73,12 +75,18 @@ const FormBuilder = ({ onSave }) => {
                     );
                 }
             } catch (err) {
-                console.error(err);
+                setError(err);
+                if (err?.response?.status !== 404) {
+                    enqueueSnackbar("Ошибка загрузки", { variant: "error" });
+                }
             }
+            setIsLoading(false);
         };
 
-        if (isMounted) {
+        if (isMounted && alias) {
             getForm();
+        } else {
+            setIsLoading(false);
         }
 
         return () => {
@@ -86,13 +94,6 @@ const FormBuilder = ({ onSave }) => {
             controller.abort();
         };
     }, []);
-    console.log("in render " + title);
-
-    useEffect(() => {
-        console.log("---");
-        console.log(title);
-        console.log("---");
-    }, [title]);
 
     //Function to add new element
     const addElement = () => {
@@ -294,6 +295,20 @@ const FormBuilder = ({ onSave }) => {
                         duplicateElement={duplicateElement}
                     />
                 );
+            case "checkbox":
+                return (
+                    <RadioInput
+                        item={item}
+                        handleValue={handleValue}
+                        deleteEl={deleteEl}
+                        handleRequired={handleRequired}
+                        handleElType={handleElType}
+                        addOption={addOption}
+                        handleOptionValues={handleOptionValues}
+                        deleteOption={deleteOption}
+                        duplicateElement={duplicateElement}
+                    />
+                );
             case "date":
                 return (
                     <DateInput
@@ -323,7 +338,35 @@ const FormBuilder = ({ onSave }) => {
         }
     };
 
-    console.log(data);
+    if (isLoading) {
+        return (
+            <Box
+                sx={{
+                    height: "100vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error?.response?.status == 404) {
+        return (
+            <Typography align="center" variant="h5">
+                Форма не найдена
+            </Typography>
+        );
+    }
+
+    if (error) {
+        return (
+            <Typography align="center" variant="h5">
+                Ошибка загрузки формы
+            </Typography>
+        );
+    }
 
     return (
         <Fragment>
@@ -381,13 +424,12 @@ const FormBuilder = ({ onSave }) => {
                                     return newItem;
                                 }),
                             };
-
                             onSave(form)
                                 .then(() => {
                                     enqueueSnackbar("Форма сохранена", {
                                         variant: "success",
                                     });
-                                    navigate("/");
+                                    navigate("/admin");
                                 })
                                 .catch((err) => {
                                     enqueueSnackbar("Ошибка сохранения", {
