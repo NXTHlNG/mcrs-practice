@@ -16,10 +16,10 @@ func (h *Handler) getStatisticsByFormId(w http.ResponseWriter, r *http.Request) 
 
 	if err != nil {
 		log.Println(err)
-		err = render.Render(w, r, ErrBadRequest)
+		err = render.Render(w, r, ErrNotFound)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			_, _ = w.Write([]byte(ErrBadRequest.ErrorText))
+			_, _ = w.Write([]byte(ErrNotFound.ErrorText))
 		}
 	}
 	log.Println(path)
