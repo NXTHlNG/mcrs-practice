@@ -44,9 +44,10 @@ type Item struct {
 }
 
 type FormResponse struct {
-	Title       string `json:"title" bson:"title"`
-	Description string `json:"description" bson:"description"`
-	Alias       string `json:"alias" bson:"alias"`
+	Id          primitive.ObjectID `json:"id" bson:"_id" binding:"required"`
+	Title       string             `json:"title" bson:"title"`
+	Description string             `json:"description" bson:"description"`
+	Alias       string             `json:"alias" bson:"alias"`
 }
 
 type Options struct {

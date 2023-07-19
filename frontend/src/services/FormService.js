@@ -3,7 +3,7 @@ import axios from "axios";
 let baseURL;
 
 if (window.location.origin === "http://localhost:3000") {
-    baseURL = "http://127.0.0.1:8000";
+    baseURL = "http://localhost:8000";
 } else {
     baseURL = window.location.origin;
 }
@@ -46,16 +46,18 @@ export const FormService = {
         return res.data;
     },
 
-    async download(alias) {
-        const res = await axios.get(`${baseURL}/download/${alias}`, {
+    async download(formId) {
+        console.log(formId);
+        const res = await axios.get(`${baseURL}/statistics/${formId}`, {
             responseType: "blob",
         });
+        console.log(res);
         const href = window.URL.createObjectURL(res.data);
 
         const anchorElement = document.createElement("a");
 
         anchorElement.href = href;
-        anchorElement.download = alias;
+        anchorElement.download = formId;
 
         document.body.appendChild(anchorElement);
         anchorElement.click();

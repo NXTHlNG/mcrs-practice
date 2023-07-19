@@ -25,10 +25,16 @@ const MainPage = () => {
         navigator.clipboard.writeText(`${window.location.host}/form/${alias}`);
     };
 
-    const onDownload = (alias) => {
-        FormService.download(alias).catch((err) =>
-            enqueueSnackbar("Ошибка скачивания", { variant: "error" })
-        );
+    const onDownload = (formId) => {
+        FormService.download(formId).catch((err) => {
+            if (err?.response?.status == 404) {
+                enqueueSnackbar("Ответы для формы не найдены", {
+                    variant: "warning",
+                });
+            } else {
+                enqueueSnackbar("Ошибка скачивания", { variant: "error" });
+            }
+        });
     };
 
     const onDelete = (id, alias) => {
@@ -117,7 +123,7 @@ const MainPage = () => {
                                 onShare(form.alias);
                             }}
                             onDownload={() => {
-                                onDownload(form.alias);
+                                onDownload(form.id);
                             }}
                         />
                     </Grid>
