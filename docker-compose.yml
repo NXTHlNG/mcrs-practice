@@ -8,25 +8,24 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "27017:27017"
     volumes:
       - dbdata:/data/db
-  
+
   backend:
     container_name: backend
     build:
       context: ./backend
     restart: always
-    ports:
-      - "8000:8000"
     env_file:
       - .env
-  
+
   nginx:
     container_name: nginx
     build:
       context: ./frontend
+      args:
+        - BASIC_AUTH_USER=${BASIC_AUTH_USER}
+        - BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD}
     restart: always
     ports:
       - "80:80"

@@ -1,4 +1,7 @@
 FROM node:16-alpine as build-stage
+
+ARG BASIC_AUTH_USER 
+ARG BASIC_AUTH_PASSWORD
 # FROM tiangolo/node-frontend:10 as build-stage
 
 WORKDIR /app
@@ -9,7 +12,9 @@ RUN npm install
 
 COPY ./ /app/
 
-RUN npm run build
+RUN REACT_APP_BASIC_AUTH_USER=${BASIC_AUTH_USER} \ 
+  REACT_APP_BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD} \ 
+  npm run build
 
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
