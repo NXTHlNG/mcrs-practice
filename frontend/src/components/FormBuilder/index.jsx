@@ -410,6 +410,7 @@ const FormBuilder = ({ onSave }) => {
                                         id: i,
                                         title: item.value,
                                         type: item.type,
+                                        required: item.required,
                                     };
 
                                     if (item.options?.length > 0) {
