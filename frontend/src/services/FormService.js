@@ -26,6 +26,11 @@ export const FormService = {
         return res.data;
     },
 
+    async getAnswers(formId) {
+        const res = await axios.get(`${baseURL}/answer/${formId}`);
+        return res.data;
+    },
+
     async delete(alias) {
         const res = await axios.delete(`${baseURL}/form/${alias}`);
         return res.data;

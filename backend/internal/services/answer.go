@@ -2,9 +2,10 @@ package services
 
 import (
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"server/internal/model"
 	"server/internal/pkg/helper/converter"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AnswerService struct {
@@ -53,8 +54,8 @@ func (r *AnswerService) Create(answer model.CreateAnswer) (model.Answer, error) 
 	return a, nil
 }
 
-func (r *AnswerService) GetAllByFormId(req model.GetAnswerRequest) ([]model.Answer, error) {
-	res, err := r.answerRepository.GetAllByFormId(req.FormId)
+func (r *AnswerService) GetAllByFormId(formId string) ([]model.Answer, error) {
+	res, err := r.answerRepository.GetAllByFormId(formId)
 
 	if err != nil {
 		return nil, fmt.Errorf("answerService.getAllByForm failed: %v", err)

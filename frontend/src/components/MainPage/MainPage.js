@@ -51,8 +51,8 @@ const MainPage = () => {
             );
     };
 
-    const onOpenForm = (alias) => {
-        navigate(`/form/${alias}`);
+    const onOpenForm = (formId) => {
+        navigate(`/admin/form/answers/${formId}`);
     };
 
     useEffect(() => {
@@ -114,7 +114,7 @@ const MainPage = () => {
                                 onEdit(form.alias);
                             }}
                             onOpenForm={() => {
-                                onOpenForm(form.alias);
+                                onOpenForm(form.id);
                             }}
                             onDelete={() => {
                                 onDelete(i, form.alias);

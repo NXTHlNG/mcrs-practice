@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"net/http"
+	"server/internal/model"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"net/http"
-	"server/internal/model"
 )
 
 type ErrResponse struct {
@@ -43,7 +44,7 @@ type FormService interface {
 
 type AnswerService interface {
 	Create(answer model.CreateAnswer) (model.Answer, error)
-	GetAllByFormId(req model.GetAnswerRequest) ([]model.Answer, error)
+	GetAllByFormId(id string) ([]model.Answer, error)
 	GetById(id primitive.ObjectID) (model.Answer, error)
 	GetStatisticsByFormId(id string) (string, error)
 }
@@ -83,10 +84,8 @@ func (h *Handler) InitRoutes() *chi.Mux {
 			r.Get("/", h.getStatisticsByFormId)
 		})
 		r.Route("/answer", func(r chi.Router) {
-			r.Get("/", h.getAnswerByFormId)
+			r.Get("/{form_id}", h.getAnswerByFormId)
 			r.Post("/", h.createAnswer)
-			r.Route("/{id}", func(r chi.Router) {
-			})
 		})
 	})
 

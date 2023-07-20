@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { Routes, Route } from "react-router-dom";
 import FormBuilder from "@components/FormBuilder";
 import MainPage from "./components/MainPage/MainPage";
+import AnswersPage from "./components/AnswersPage/AnswersPage";
 import FormPage from "./components/FormPage/FormPage";
 import FormResponse from "./components/FormPage/FormResponse";
 import { FormService } from "./services/FormService";
@@ -18,6 +19,10 @@ const App = () => {
             <Route
                 path="/admin/form/create"
                 element={<FormBuilder onSave={FormService.create} />}
+            />
+            <Route
+                path="/admin/form/answers/:formId"
+                element={<AnswersPage />}
             />
             <Route path="/form/:alias" element={<FormPage />} />
             <Route path="/form/response" element={<FormResponse />} />

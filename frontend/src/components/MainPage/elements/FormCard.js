@@ -34,7 +34,14 @@ const FormCard = ({
         <Card sx={{ minWidth: 275 }}>
             <CardActionArea onClick={onOpenForm}>
                 <CardContent sx={{ minHeight: 50 }}>
-                    <Typography variant="h5" component="div">
+                    <Typography
+                        variant="h5"
+                        sx={{
+                            display: "-webkit-box",
+                            overflow: "hidden",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 1,
+                        }}>
                         {title}
                     </Typography>
                     <Typography

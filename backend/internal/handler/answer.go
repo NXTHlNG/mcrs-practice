@@ -1,16 +1,19 @@
 package handler
 
 import (
-	"github.com/go-chi/render"
+	"fmt"
 	"log"
 	"net/http"
 	"server/internal/model"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
 )
 
 func (h *Handler) getAnswerByFormId(w http.ResponseWriter, r *http.Request) {
-	var req model.GetAnswerRequest
-	err := render.DecodeJSON(r.Body, &req)
-	if err != nil {
+	formId := chi.URLParam(r, "form_id")
+	fmt.Println(formId)
+	if formId == "" {
 		err := render.Render(w, r, ErrBadRequest)
 		if err != nil {
 			_, _ = w.Write([]byte("Bad request"))
@@ -20,7 +23,7 @@ func (h *Handler) getAnswerByFormId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.answerService.GetAllByFormId(req)
+	res, err := h.answerService.GetAllByFormId(formId)
 	if err != nil {
 		err := render.Render(w, r, ErrNotFound)
 		if err != nil {
