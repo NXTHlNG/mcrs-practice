@@ -11,12 +11,7 @@ import { useSnackbar } from "notistack";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const MainPage = () => {
-    const [forms, setForms] = useState([
-        {
-            title: "asd",
-            alias: "asds",
-        },
-    ]);
+    const [forms, setForms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
@@ -27,20 +22,20 @@ const MainPage = () => {
     };
 
     const onShare = (alias) => {
-        // try {
-        //     navigator.clipboard.writeText(
-        //         `${window.location.host}/form/${alias}`
-        //     );
-        // } catch (err) {
-        const textArea = document.createElement("textarea");
-        textArea.style.position = "absolute";
-        textArea.style.left = "-999999px";
-        textArea.value = `${window.location.host}/form/${alias}`;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand("copy");
-        // }
+        try {
+            navigator.clipboard.writeText(
+                `${window.location.host}/form/${alias}`
+            );
+        } catch (err) {
+            const textArea = document.createElement("textarea");
+            textArea.style.position = "absolute";
+            textArea.style.left = "-999999px";
+            textArea.value = `${window.location.host}/form/${alias}`;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            document.execCommand("copy");
+        }
     };
 
     const onDownload = (formId) => {
