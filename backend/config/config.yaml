@@ -6,3 +6,5 @@ server:
 mongo:
   uri: mongodb://localhost:27017
   db-name: mcrs
+  db-user: admin
+  db-password: root

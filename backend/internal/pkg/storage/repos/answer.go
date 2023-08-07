@@ -2,6 +2,7 @@ package repos
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -54,4 +55,22 @@ func (r *AnswerRepository) GetById(id primitive.ObjectID) (model.Answer, error) 
 		return res, err
 	}
 	return res, nil
+}
+
+func (r *AnswerRepository) DeleteById(id primitive.ObjectID) error {
+	_, err := r.collection.DeleteOne(context.Background(), bson.D{{"_id", id}})
+
+	return err
+}
+
+func (r *AnswerRepository) UpdateById(id primitive.ObjectID, answer model.UpdateAnswer) (primitive.ObjectID, error) {
+	res, err := r.collection.UpdateByID(context.Background(), bson.D{{"_id", id}}, bson.M{})
+	if err != nil {
+		return primitive.NilObjectID, err
+	}
+	if res.UpsertedCount == 0 && res.ModifiedCount == 0 {
+		return primitive.NilObjectID, fmt.Errorf("answer with id %v not found", id)
+	}
+
+	return res.UpsertedID.(primitive.ObjectID), nil
 }

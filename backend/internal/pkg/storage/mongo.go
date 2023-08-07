@@ -2,12 +2,12 @@ package storage
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
@@ -23,14 +23,15 @@ func New(uri, username, password string) *Storage {
 		Username: username,
 		Password: password,
 	}))
+	//client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 
 	if err != nil {
-		log.Printf("try connect to mongo")
+		log.Printf("try connect to mongo: %v", err)
 		os.Exit(1)
 	}
 
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
-		log.Printf("try ping to mongo")
+		log.Printf("try ping to mongo: %v", err)
 		os.Exit(1)
 	}
 

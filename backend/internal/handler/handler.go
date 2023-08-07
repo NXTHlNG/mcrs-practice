@@ -43,6 +43,8 @@ type FormService interface {
 }
 
 type AnswerService interface {
+	UpdateById(id primitive.ObjectID, update model.UpdateAnswer) (model.Answer, error)
+	DeleteById(id primitive.ObjectID) error
 	Create(answer model.CreateAnswer) (model.Answer, error)
 	GetAllByFormId(id string) ([]model.Answer, error)
 	GetById(id primitive.ObjectID) (model.Answer, error)
@@ -70,6 +72,7 @@ func (h *Handler) InitRoutes() *chi.Mux {
 		_, _ = w.Write([]byte("ok"))
 		w.WriteHeader(http.StatusOK)
 	})
+
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/form", func(r chi.Router) {
 			r.Get("/", h.getAll)
@@ -86,6 +89,8 @@ func (h *Handler) InitRoutes() *chi.Mux {
 		r.Route("/answer", func(r chi.Router) {
 			r.Get("/{form_id}", h.getAnswerByFormId)
 			r.Post("/", h.createAnswer)
+			r.Delete("/{id}", h.deleteAnswer)
+			r.Put("{id}", h.updateAnswer)
 		})
 	})
 

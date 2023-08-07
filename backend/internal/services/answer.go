@@ -16,12 +16,31 @@ type AnswerRepository interface {
 	Create(answer model.CreateAnswer) (primitive.ObjectID, error)
 	GetAllByFormId(id string) ([]model.Answer, error)
 	GetById(id primitive.ObjectID) (model.Answer, error)
+	UpdateById(id primitive.ObjectID, update model.UpdateAnswer) (primitive.ObjectID, error)
+	DeleteById(id primitive.ObjectID) error
 }
 
-func NewAnswer(r AnswerRepository) *AnswerService {
+func NewAnswer(s AnswerRepository) *AnswerService {
 	return &AnswerService{
-		answerRepository: r,
+		answerRepository: s,
 	}
+}
+
+func (s *AnswerService) DeleteById(id primitive.ObjectID) error {
+	if err := s.answerRepository.DeleteById(id); err != nil {
+		return fmt.Errorf("answerService.deleteById failed: %v", err)
+	}
+	return nil
+}
+
+func (s *AnswerService) UpdateById(id primitive.ObjectID, answer model.UpdateAnswer) (model.Answer, error) {
+	id, err := s.answerRepository.UpdateById(id, answer)
+
+	if err != nil {
+		return model.Answer{}, fmt.Errorf("answerService.updateById failed: %v", err)
+	}
+
+	return s.GetById(id)
 }
 
 func (s *AnswerService) GetStatisticsByFormId(formId string) (string, error) {
@@ -40,13 +59,13 @@ func (s *AnswerService) GetStatisticsByFormId(formId string) (string, error) {
 	return name, nil
 }
 
-func (r *AnswerService) Create(answer model.CreateAnswer) (model.Answer, error) {
-	id, err := r.answerRepository.Create(answer)
+func (s *AnswerService) Create(answer model.CreateAnswer) (model.Answer, error) {
+	id, err := s.answerRepository.Create(answer)
 	if err != nil {
 		return model.Answer{}, fmt.Errorf("answerService.create failed: %v", err)
 	}
 
-	a, err := r.answerRepository.GetById(primitive.ObjectID(id))
+	a, err := s.answerRepository.GetById(primitive.ObjectID(id))
 	if err != nil {
 		return model.Answer{}, fmt.Errorf("answerService.repo.GetById failed: %v", err)
 	}
@@ -54,8 +73,8 @@ func (r *AnswerService) Create(answer model.CreateAnswer) (model.Answer, error) 
 	return a, nil
 }
 
-func (r *AnswerService) GetAllByFormId(formId string) ([]model.Answer, error) {
-	res, err := r.answerRepository.GetAllByFormId(formId)
+func (s *AnswerService) GetAllByFormId(formId string) ([]model.Answer, error) {
+	res, err := s.answerRepository.GetAllByFormId(formId)
 
 	if err != nil {
 		return nil, fmt.Errorf("answerService.getAllByForm failed: %v", err)
@@ -64,8 +83,8 @@ func (r *AnswerService) GetAllByFormId(formId string) ([]model.Answer, error) {
 	return res, nil
 }
 
-func (r *AnswerService) GetById(id primitive.ObjectID) (model.Answer, error) {
-	res, err := r.answerRepository.GetById(id)
+func (s *AnswerService) GetById(id primitive.ObjectID) (model.Answer, error) {
+	res, err := s.answerRepository.GetById(id)
 
 	if err != nil {
 		return model.Answer{}, fmt.Errorf("answerService.getById failed: %v", err)
