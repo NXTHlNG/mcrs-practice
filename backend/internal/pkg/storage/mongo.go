@@ -19,11 +19,12 @@ func New(uri, username, password string) *Storage {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri).SetAuth(options.Credential{
-		Username: username,
-		Password: password,
-	}))
-	//client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	//client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri).SetAuth(options.Credential{
+	//	Username: username,
+	//	Password: password,
+	//}))
+
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 
 	if err != nil {
 		log.Printf("try connect to mongo: %v", err)

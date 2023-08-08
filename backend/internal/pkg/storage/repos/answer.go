@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"server/internal/model"
 )
 
@@ -64,13 +65,14 @@ func (r *AnswerRepository) DeleteById(id primitive.ObjectID) error {
 }
 
 func (r *AnswerRepository) UpdateById(id primitive.ObjectID, answer model.UpdateAnswer) (primitive.ObjectID, error) {
-	res, err := r.collection.UpdateByID(context.Background(), bson.D{{"_id", id}}, bson.M{})
+	res, err := r.collection.UpdateByID(context.Background(), id, bson.M{"$set": answer})
 	if err != nil {
 		return primitive.NilObjectID, err
 	}
-	if res.UpsertedCount == 0 && res.ModifiedCount == 0 {
+	log.Printf("update result: %v", res)
+	if res.UpsertedCount == 0 && res.ModifiedCount == 0 && res.MatchedCount == 0 {
 		return primitive.NilObjectID, fmt.Errorf("answer with id %v not found", id)
 	}
 
-	return res.UpsertedID.(primitive.ObjectID), nil
+	return id, nil
 }

@@ -90,7 +90,7 @@ func (h *Handler) InitRoutes() *chi.Mux {
 			r.Get("/{form_id}", h.getAnswerByFormId)
 			r.Post("/", h.createAnswer)
 			r.Delete("/{id}", h.deleteAnswer)
-			r.Put("{id}", h.updateAnswer)
+			r.Put("/{id}", h.updateAnswer)
 		})
 	})
 
