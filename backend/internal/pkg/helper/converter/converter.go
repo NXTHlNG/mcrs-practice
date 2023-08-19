@@ -11,33 +11,91 @@ const (
 )
 
 func ToExcel(answers []model.Answer) (string, error) {
+
+	// create file
 	f := excelize.NewFile()
 	defer f.Close()
 	if len(answers) == 0 {
 		return "", fmt.Errorf("not found resource")
 	}
 
-	for i := 0; i < len(answers[0].Items); i++ {
-		v := answers[0].Items[i].Title
-		cell, _ := excelize.CoordinatesToCellName(i, 1)
-		_ = f.SetCellValue(sheet, cell, v)
-	}
+	// answers to exel
+	var haveMulti bool
 
-	for i, answer := range answers {
-		for j, item := range answer.Items {
-			cell, err := excelize.CoordinatesToCellName(j+1, i+1)
-			if err != nil {
-				return "", fmt.Errorf("bad data format")
-			}
-
-			err = f.SetCellValue(sheet, cell, item.Value)
-			if err != nil {
-				return "", fmt.Errorf("bad data format")
-			}
+	for _, item := range answers[0].Items {
+		if item.Type == model.Multi {
+			haveMulti = true
+			break
 		}
 	}
 
-	if err := f.SaveAs("xyi.xlsx"); err != nil {
+	rowOffset := 1
+	columnOffset := 1
+
+	for i, item := range answers[0].Items {
+		if item.Type != model.Multi {
+			h, _ := excelize.CoordinatesToCellName(i+columnOffset, rowOffset)
+			_ = f.SetCellValue(sheet, h, item.Title)
+
+			if haveMulti {
+				v, _ := excelize.CoordinatesToCellName(i+columnOffset, rowOffset+1)
+				_ = f.MergeCell(sheet, h, v)
+			}
+		} else {
+			h, _ := excelize.CoordinatesToCellName(i+columnOffset, rowOffset)
+			_ = f.SetCellValue(sheet, h, item.Title)
+
+			multiAnswers, ok := item.Value.([]model.AnswerItem)
+
+			if !ok {
+				return "", fmt.Errorf("erorr cast item value with type %s to []AnswerItem ", item.Type)
+			}
+
+			v, _ := excelize.CoordinatesToCellName(i+columnOffset+len(multiAnswers)-1, rowOffset)
+			_ = f.MergeCell(sheet, h, v)
+
+			for j, a := range multiAnswers {
+				cell, _ := excelize.CoordinatesToCellName(i+j+columnOffset, rowOffset+1)
+				_ = f.SetCellValue(sheet, cell, a.Title)
+			}
+
+			columnOffset += len(multiAnswers) - 1
+		}
+	}
+
+	rowOffset = 2
+
+	if haveMulti {
+		rowOffset = 3
+	}
+
+	for i, answer := range answers {
+		columnOffset = 1
+		for j, item := range answer.Items {
+
+			if item.Type != model.Multi {
+				cell, _ := excelize.CoordinatesToCellName(j+columnOffset, i+rowOffset)
+				_ = f.SetCellValue(sheet, cell, item.Value)
+			} else {
+				multiAnswers, ok := item.Value.([]model.AnswerItem)
+
+				if !ok {
+					return "", fmt.Errorf("erorr cast item value with type %s to []AnswerItem ", item.Type)
+				}
+
+				for k, a := range multiAnswers {
+					cell, _ := excelize.CoordinatesToCellName(k+j+columnOffset, i+rowOffset)
+					_ = f.SetCellValue(sheet, cell, a.Value)
+				}
+
+				columnOffset += len(multiAnswers) - 1
+			}
+
+		}
+	}
+
+	// save file
+	if err := f.SaveAs("answer.xlsx"); err != nil {
 		fmt.Println(err)
 	}
 
