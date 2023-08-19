@@ -3,12 +3,12 @@ package model
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 const (
-	Text          ItemType = "text"
-	Date          ItemType = "date"
-	Time          ItemType = "time"
-	Radio         ItemType = "radio"
-	Checkbox      ItemType = "checkbox"
-	MultiQuestion ItemType = "multiquestion"
+	Text     ItemType = "text"
+	Date     ItemType = "date"
+	Time     ItemType = "time"
+	Radio    ItemType = "radio"
+	Checkbox ItemType = "checkbox"
+	Multi    ItemType = "multi"
 )
 
 type ItemType string

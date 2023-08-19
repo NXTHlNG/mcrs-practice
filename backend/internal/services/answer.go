@@ -18,12 +18,23 @@ type AnswerRepository interface {
 	GetById(id primitive.ObjectID) (model.Answer, error)
 	UpdateById(id primitive.ObjectID, update model.UpdateAnswer) (primitive.ObjectID, error)
 	DeleteById(id primitive.ObjectID) error
+	CreateAll(answer []interface{}) ([]interface{}, error)
 }
 
 func NewAnswer(s AnswerRepository) *AnswerService {
 	return &AnswerService{
 		answerRepository: s,
 	}
+}
+
+func (s *AnswerService) CreateAll(answers []model.CreateAnswer) ([]interface{}, error) {
+	res, err := s.answerRepository.CreateAll(interfaceSlice(answers))
+
+	if err != nil {
+		return nil, fmt.Errorf("answerService.createAll failed: %v", err)
+	}
+
+	return res, nil
 }
 
 func (s *AnswerService) DeleteById(id primitive.ObjectID) error {
@@ -91,4 +102,14 @@ func (s *AnswerService) GetById(id primitive.ObjectID) (model.Answer, error) {
 	}
 
 	return res, nil
+}
+
+func interfaceSlice(slice []model.CreateAnswer) []interface{} {
+	var res = make([]interface{}, len(slice))
+
+	for i, s := range slice {
+		res[i] = s
+	}
+
+	return res
 }

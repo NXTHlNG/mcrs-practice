@@ -49,6 +49,7 @@ type AnswerService interface {
 	GetAllByFormId(id string) ([]model.Answer, error)
 	GetById(id primitive.ObjectID) (model.Answer, error)
 	GetStatisticsByFormId(id string) (string, error)
+	CreateAll([]model.CreateAnswer) ([]interface{}, error)
 }
 
 func New(fs FormService, as AnswerService) *Handler {
@@ -89,6 +90,7 @@ func (h *Handler) InitRoutes() *chi.Mux {
 		r.Route("/answer", func(r chi.Router) {
 			r.Get("/{form_id}", h.getAnswerByFormId)
 			r.Post("/", h.createAnswer)
+			r.Post("/all", h.createAllAnswers)
 			r.Delete("/{id}", h.deleteAnswer)
 			r.Put("/{id}", h.updateAnswer)
 		})

@@ -13,6 +13,10 @@ type CreateAnswer struct {
 	Items  []AnswerItem `json:"items" bson:"items" binding:"required"`
 }
 
+type CreateAllAnswer struct {
+	Answers []CreateAnswer `json:"answers"`
+}
+
 type UpdateAnswer struct {
 	Items []AnswerItem `json:"items" bson:"items" binding:"required"`
 }
@@ -21,7 +25,7 @@ type AnswerItem struct {
 	Id    string   `json:"id" bson:"id" binding:"required"`
 	Title string   `json:"title" bson:"title" binding:"required"`
 	Type  ItemType `json:"type" bson:"type" binding:"required"`
-	// Если Type равен MultiQuestion, тогда Value имеет тип [] AnswerItem
+	// Если Type равен Multi, тогда Value имеет тип [] AnswerItem
 	Value any `json:"value" bson:"value" binding:"required"`
 }
 

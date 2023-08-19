@@ -140,3 +140,31 @@ func (h *Handler) updateAnswer(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, &res)
 	return
 }
+
+func (h *Handler) createAllAnswers(w http.ResponseWriter, r *http.Request) {
+	var answer model.CreateAllAnswer
+
+	err := render.DecodeJSON(r.Body, &answer)
+	if err != nil {
+		err := render.Render(w, r, ErrBadRequest)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = w.Write([]byte("bad form format"))
+		}
+		log.Println(err)
+		return
+	}
+
+	save, err := h.answerService.CreateAll(answer.Answers)
+	if err != nil {
+		err := render.Render(w, r, ErrBadRequest)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = w.Write([]byte("bad form format"))
+		}
+		log.Println(err)
+		return
+	}
+	render.JSON(w, r, &save)
+	return
+}

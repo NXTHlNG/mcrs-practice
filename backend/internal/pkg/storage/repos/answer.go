@@ -76,3 +76,9 @@ func (r *AnswerRepository) UpdateById(id primitive.ObjectID, answer model.Update
 
 	return id, nil
 }
+
+func (r *AnswerRepository) CreateAll(answer []interface{}) ([]interface{}, error) {
+	res, err := r.collection.InsertMany(context.Background(), answer)
+
+	return res.InsertedIDs, err
+}
