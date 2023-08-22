@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"io"
 	"log"
 	"server/internal/model"
 )
@@ -33,13 +34,41 @@ func (r *AnswerRepository) Create(a model.CreateAnswer) (primitive.ObjectID, err
 
 func (r *AnswerRepository) GetAllByFormId(id string) ([]model.Answer, error) {
 	var res []model.Answer
+	ctx := context.Background()
 
-	cur, err := r.collection.Find(context.Background(), bson.D{{"form_id", id}})
+	cur, err := r.collection.Find(ctx, bson.D{{"form_id", id}})
 	if err != nil {
 		return nil, err
 	}
 
-	err = cur.All(context.Background(), &res)
+	var answer model.Answer
+	for cur.Next(ctx) {
+
+		if err := cur.Err(); err != nil {
+			if err == io.EOF {
+				break
+			}
+
+			return nil, err
+		}
+
+		answer = model.Answer{}
+		err := cur.Decode(&answer)
+
+		if err != nil {
+			return nil, err
+		}
+
+		injectionType(&answer)
+
+		err = cur.Decode(&answer)
+		if err != nil {
+			return nil, err
+		}
+
+		res = append(res, answer)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -81,4 +110,15 @@ func (r *AnswerRepository) CreateAll(answer []interface{}) ([]interface{}, error
 	res, err := r.collection.InsertMany(context.Background(), answer)
 
 	return res.InsertedIDs, err
+}
+
+func injectionType(answer *model.Answer) {
+	for _, item := range answer.Items {
+		if item.Type == model.Multi {
+			var arr []model.AnswerItem
+			item.Value = arr
+		} else {
+			item.Value = model.AnswerItem{}
+		}
+	}
 }

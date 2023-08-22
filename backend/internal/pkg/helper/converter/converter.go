@@ -11,7 +11,6 @@ const (
 )
 
 func ToExcel(answers []model.Answer) (string, error) {
-
 	// create file
 	f := excelize.NewFile()
 	defer f.Close()

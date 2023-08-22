@@ -76,7 +76,7 @@ func (s *AnswerService) Create(answer model.CreateAnswer) (model.Answer, error) 
 		return model.Answer{}, fmt.Errorf("answerService.create failed: %v", err)
 	}
 
-	a, err := s.answerRepository.GetById(primitive.ObjectID(id))
+	a, err := s.answerRepository.GetById(id)
 	if err != nil {
 		return model.Answer{}, fmt.Errorf("answerService.repo.GetById failed: %v", err)
 	}
