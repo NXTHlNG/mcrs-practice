@@ -44,11 +44,12 @@ func (h *Handler) createAnswer(w http.ResponseWriter, r *http.Request) {
 	err := render.DecodeJSON(r.Body, &answer)
 	if err != nil {
 		err := render.Render(w, r, ErrBadRequest)
+		log.Println(err)
 		if err != nil {
+			log.Println(err)
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = w.Write([]byte("bad form format"))
 		}
-		log.Println(err)
 		return
 	}
 

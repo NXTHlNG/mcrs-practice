@@ -1,6 +1,9 @@
 package model
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"encoding/json"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Answer struct {
 	Id     primitive.ObjectID `json:"id" bson:"_id" binding:"required"`
@@ -26,7 +29,13 @@ type AnswerItem struct {
 	Title string   `json:"title" bson:"title" binding:"required"`
 	Type  ItemType `json:"type" bson:"type" binding:"required"`
 	// Если Type равен Multi, тогда Value имеет тип [] AnswerItem
-	Value any `json:"value" bson:"value" binding:"required"`
+	Value json.RawMessage `json:"value" bson:"value" binding:"required"`
+}
+
+type ItemFromJSON struct {
+	Id    string   `json:"id"`
+	Title string   `json:"title"`
+	Type  ItemType `json:"type"`
 }
 
 type GetAnswerRequest struct {

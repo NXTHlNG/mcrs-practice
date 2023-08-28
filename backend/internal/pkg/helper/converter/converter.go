@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/xuri/excelize/v2"
 	"server/internal/model"
@@ -9,6 +10,20 @@ import (
 const (
 	sheet = "Sheet1"
 )
+
+type checkboxAnswer []string
+
+func (c checkboxAnswer) String() string {
+	var res string
+
+	for _, a := range c[:len(c)-1] {
+		res += a + ","
+	}
+
+	res += c[len(c)-1]
+
+	return res
+}
 
 func ToExcel(answers []model.Answer) (string, error) {
 	// create file
@@ -33,29 +48,57 @@ func ToExcel(answers []model.Answer) (string, error) {
 
 	for i, item := range answers[0].Items {
 		if item.Type != model.Multi {
-			h, _ := excelize.CoordinatesToCellName(i+columnOffset, rowOffset)
-			_ = f.SetCellValue(sheet, h, item.Title)
+			h, err := excelize.CoordinatesToCellName(i+columnOffset, rowOffset)
+			if err != nil {
+				return "", fmt.Errorf("failed to coord %d to %d: %v", i+columnOffset, rowOffset, err)
+			}
+
+			err = f.SetCellValue(sheet, h, item.Title)
+			if err != nil {
+				return "", fmt.Errorf("failed to set value %s: %v", item.Title, err)
+			}
 
 			if haveMulti {
-				v, _ := excelize.CoordinatesToCellName(i+columnOffset, rowOffset+1)
+				v, err := excelize.CoordinatesToCellName(i+columnOffset, rowOffset+1)
+				if err != nil {
+					return "", fmt.Errorf("failed to coord %d to %d: %v", i+columnOffset, rowOffset, err)
+				}
 				_ = f.MergeCell(sheet, h, v)
 			}
 		} else {
-			h, _ := excelize.CoordinatesToCellName(i+columnOffset, rowOffset)
-			_ = f.SetCellValue(sheet, h, item.Title)
-
-			multiAnswers, ok := item.Value.([]model.AnswerItem)
-
-			if !ok {
-				return "", fmt.Errorf("erorr cast item value with type %s to []AnswerItem ", item.Type)
+			h, err := excelize.CoordinatesToCellName(i+columnOffset, rowOffset)
+			if err != nil {
+				return "", fmt.Errorf("failed to coord %d to %d: %v", i+columnOffset, rowOffset, err)
 			}
 
-			v, _ := excelize.CoordinatesToCellName(i+columnOffset+len(multiAnswers)-1, rowOffset)
+			err = f.SetCellValue(sheet, h, item.Title)
+			if err != nil {
+				return "", fmt.Errorf("failed to set value %s: %v", item.Title, err)
+			}
+
+			var multiAnswers []model.AnswerItem
+
+			err = json.Unmarshal(item.Value, &multiAnswers)
+			if err != nil {
+				return "", fmt.Errorf("failed encoding json: %v", err)
+			}
+
+			v, err := excelize.CoordinatesToCellName(i+columnOffset+len(multiAnswers)-1, rowOffset)
+			if err != nil {
+				return "", fmt.Errorf("failed to coord %d to %d: %v", i+columnOffset, rowOffset, err)
+			}
+
 			_ = f.MergeCell(sheet, h, v)
 
 			for j, a := range multiAnswers {
-				cell, _ := excelize.CoordinatesToCellName(i+j+columnOffset, rowOffset+1)
-				_ = f.SetCellValue(sheet, cell, a.Title)
+				cell, err := excelize.CoordinatesToCellName(i+j+columnOffset, rowOffset+1)
+				if err != nil {
+					return "", fmt.Errorf("failed to coord %d to %d: %v", i+columnOffset, rowOffset, err)
+				}
+				err = f.SetCellValue(sheet, cell, a.Title)
+				if err != nil {
+					return "", fmt.Errorf("failed to set value %s: %v", a.Title, err)
+				}
 			}
 
 			columnOffset += len(multiAnswers) - 1
@@ -72,30 +115,76 @@ func ToExcel(answers []model.Answer) (string, error) {
 		columnOffset = 1
 		for j, item := range answer.Items {
 
-			if item.Type != model.Multi {
-				cell, _ := excelize.CoordinatesToCellName(j+columnOffset, i+rowOffset)
-				_ = f.SetCellValue(sheet, cell, item.Value)
-			} else {
-				multiAnswers, ok := item.Value.([]model.AnswerItem)
+			switch item.Type {
+			case model.Multi:
+				var multiAnswers []model.AnswerItem
 
-				if !ok {
-					return "", fmt.Errorf("erorr cast item value with type %s to []AnswerItem ", item.Type)
+				err := json.Unmarshal(item.Value, &multiAnswers)
+
+				if err != nil {
+					return "", fmt.Errorf("failed encoding json: %v", err)
 				}
 
 				for k, a := range multiAnswers {
-					cell, _ := excelize.CoordinatesToCellName(k+j+columnOffset, i+rowOffset)
-					_ = f.SetCellValue(sheet, cell, a.Value)
+					switch a.Type {
+					case model.Checkbox:
+						var answers checkboxAnswer
+
+						err := json.Unmarshal(a.Value, &answers)
+
+						if err != nil {
+							return "", fmt.Errorf("failed encoding json: %v", err)
+						}
+
+						cell, _ := excelize.CoordinatesToCellName(j+k+columnOffset, i+rowOffset)
+						_ = f.SetCellValue(sheet, cell, answers)
+						break
+					default:
+						var v string
+
+						err := json.Unmarshal(a.Value, &v)
+
+						if err != nil {
+							return "", fmt.Errorf("failed encoding json: %v", err)
+						}
+
+						cell, _ := excelize.CoordinatesToCellName(j+k+columnOffset, i+rowOffset)
+						_ = f.SetCellValue(sheet, cell, v)
+						break
+					}
 				}
 
 				columnOffset += len(multiAnswers) - 1
-			}
+				break
+			case model.Checkbox:
+				var answers checkboxAnswer
 
+				err := json.Unmarshal(item.Value, &answers)
+
+				if err != nil {
+					return "", fmt.Errorf("failed encoding json: %v", err)
+				}
+
+				cell, _ := excelize.CoordinatesToCellName(j+columnOffset, i+rowOffset)
+				_ = f.SetCellValue(sheet, cell, answers)
+			default:
+				var v string
+
+				err := json.Unmarshal(item.Value, &v)
+
+				if err != nil {
+					return "", fmt.Errorf("failed encoding json: %v", err)
+				}
+
+				cell, _ := excelize.CoordinatesToCellName(j+columnOffset, i+rowOffset)
+				_ = f.SetCellValue(sheet, cell, v)
+			}
 		}
 	}
 
 	// save file
 	if err := f.SaveAs("answer.xlsx"); err != nil {
-		fmt.Println(err)
+		return "", fmt.Errorf("failed saving answer.xlsx: %v", err)
 	}
 
 	return f.Path, nil

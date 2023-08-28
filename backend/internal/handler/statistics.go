@@ -24,14 +24,41 @@ func (h *Handler) getStatisticsByFormId(w http.ResponseWriter, r *http.Request) 
 	}
 	log.Println(path)
 
-	f, _ := os.Open(path)
-	data, _ := io.ReadAll(f)
-	f.Close()
+	f, err := os.Open(path)
+	defer os.Remove(path)
+	defer f.Close()
 
-	os.Remove(path)
+	if err != nil {
+		log.Println(err)
+		err = render.Render(w, r, ErrNotFound)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = w.Write([]byte(ErrNotFound.ErrorText))
+		}
+	}
+
+	data, err := io.ReadAll(f)
+
+	if err != nil {
+		log.Println(err)
+		err = render.Render(w, r, ErrNotFound)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = w.Write([]byte(ErrNotFound.ErrorText))
+		}
+	}
 
 	w.Header().Add("Content-disposition", "attachment;filename=answer.xlsx")
 	w.Header().Set("Content-Type", "application/vnd.ms-excel")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(data)
+
+	_, err = w.Write(data)
+	if err != nil {
+		log.Println(err)
+		err = render.Render(w, r, ErrNotFound)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = w.Write([]byte(ErrNotFound.ErrorText))
+		}
+	}
 }

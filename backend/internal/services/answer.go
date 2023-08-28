@@ -61,13 +61,13 @@ func (s *AnswerService) GetStatisticsByFormId(formId string) (string, error) {
 		return "", fmt.Errorf("service.Answer.GetAllByFormId failed: %v", err)
 	}
 
-	name, err := converter.ToExcel(res)
+	path, err := converter.ToExcel(res)
 
 	if err != nil {
 		return "", fmt.Errorf("service.Answer.GetAllByFormId converted failed: %v", err)
 	}
 
-	return name, nil
+	return path, nil
 }
 
 func (s *AnswerService) Create(answer model.CreateAnswer) (model.Answer, error) {
