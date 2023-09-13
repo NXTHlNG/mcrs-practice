@@ -29,7 +29,7 @@ type AnswerItem struct {
 	Title string   `json:"title" bson:"title" binding:"required"`
 	Type  ItemType `json:"type" bson:"type" binding:"required"`
 	// Если Type равен Multi, тогда Value имеет тип [] AnswerItem
-	Value json.RawMessage `json:"value" bson:"value" binding:"required"`
+	Value json.RawMessage `json:"value" bson:"value"`
 }
 
 type ItemFromJSON struct {

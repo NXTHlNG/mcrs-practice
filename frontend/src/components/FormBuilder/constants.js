@@ -26,5 +26,9 @@ export const formEl = [
   {
     label: "Время",
     value: "time",
+  },
+  {
+    label: "Модульное поле",
+    value: "multi"
   }
 ];

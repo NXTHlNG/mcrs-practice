@@ -1,28 +1,16 @@
-import { Fragment, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
     Button,
     Box,
     Typography,
-    TextField,
-    Stack,
-    FormControl,
-    FormLabel,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
-    FormGroup,
-    Checkbox,
 } from "@material-ui/core";
-import AddIcon from "@mui/icons-material/Add";
 import { FormService } from "../../services/FormService";
 import { useSnackbar } from "notistack";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import Input from "@material-ui/core/Input";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { TimePicker } from "@mui/x-date-pickers";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
+import MultiFormView from "./MultiView";
+import DefaultFormView from "./DefalutView";
 
 const FormPage = () => {
     const { alias } = useParams();
@@ -30,41 +18,12 @@ const FormPage = () => {
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
     const [data, setData] = useState([]);
-    const [formData, setFormData] = useState("text");
+    const [isMultiForm, setIsMultiForm] = useState(false);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const navigate = useNavigate();
-
-    const { control, handleSubmit } = useForm();
-    const onSubmit = (data) => {
-        console.log(data);
-        FormService.answer({
-            user_id: "1",
-            form_id: formId,
-            items: Object.entries(data).map((entry) => {
-                let parsedId = parseId(entry[0]);
-                return {
-                    id: parsedId.id,
-                    title: parsedId.title,
-                    value: entry[1],
-                };
-            }),
-        })
-            .then(() => {
-                enqueueSnackbar("Ответ сохранён", {
-                    variant: "success",
-                });
-                navigate("/form/response");
-            })
-            .catch((err) => {
-                setError(err);
-                enqueueSnackbar("Ошибка сохранения", {
-                    variant: "error",
-                });
-            });
-    };
 
     const makeId = (title, id) => {
         return `${title}_${id}`;
@@ -73,9 +32,70 @@ const FormPage = () => {
     const parseId = (id) => {
         let parsed = id.split("_");
         return {
-            title: parsed[0],
-            id: parsed[1],
+            title: parsed[0].replaceAll("★", ",").replaceAll("✳", "."),
+            i: parsed[1],
+            id: parsed[2],
+            type: parsed[3]
         };
+    };
+
+    const mapToAnswerItem = (data) => {
+        return Object.entries(data).map((entry) => {
+            let parsedId = parseId(entry[0]);
+            return {
+                i: parsedId.i,
+                id: parsedId.id,
+                title: parsedId.title,
+                type: parsedId.type,
+                value: parsedId.type !== "multi" ? entry[1] : mapToAnswerItem(entry[1])
+            };
+        })
+    }
+
+    const parseAnswers = (data) => {
+        console.log(data)
+        let answers = mapToAnswerItem(data)
+
+        const groupedByI = {};
+
+        for (const obj of answers) {
+            if (!groupedByI[obj.i]) {
+                groupedByI[obj.i] = [];
+            }
+            groupedByI[obj.i].push({
+                id: obj.id,
+                title: obj.title,
+                type: obj.type,
+                value: obj.value
+            });
+        }
+
+        const resultArray = [];
+
+        for (const i in groupedByI) {
+            resultArray.push({
+                form_id: formId,
+                items: groupedByI[i]
+            });
+        }
+
+        return resultArray
+    }
+
+    const onSubmit = (data) => {
+        FormService.answer({ answers: parseAnswers(data) })
+            .then(() => {
+                enqueueSnackbar("Ответ сохранён", {
+                    variant: "success",
+                });
+                navigate(`/form/response/${alias}`);
+            })
+            .catch((err) => {
+                setError(err);
+                enqueueSnackbar("Ошибка сохранения", {
+                    variant: "error",
+                });
+            });
     };
 
     useEffect(() => {
@@ -129,207 +149,26 @@ const FormPage = () => {
             Форма не найдена
         </Typography>
     ) : (
-        <Box width={800} marginX="auto">
-            <Typography variant="h4">{title}</Typography>
-            <Typography variant="body1" marginBottom={5}>
-                {description}
-            </Typography>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <Stack spacing={2}>
-                    {data.map((item, i) => {
-                        switch (item.type) {
-                            case "text":
-                                return (
-                                    <>
-                                        <Typography>
-                                            {item.id + 1}. {item.title}
-                                        </Typography>
-                                        <Controller
-                                            name={makeId(item.title, item.id)}
-                                            control={control}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    label={item.title}
-                                                    required={item.required}
-                                                    {...field}
-                                                />
-                                            )}
-                                        />
-                                    </>
-                                );
-                            case "textarea":
-                                return (
-                                    <>
-                                        <Typography>
-                                            {item.id + 1}. {item.title}
-                                        </Typography>
-                                        <Controller
-                                            name={makeId(item.title, item.id)}
-                                            control={control}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    multiline={true}
-                                                    maxRows={4}
-                                                    label={item.title}
-                                                    required={item.required}
-                                                    {...field}
-                                                />
-                                            )}
-                                        />
-                                    </>
-                                );
-                            case "number":
-                                return (
-                                    <>
-                                        <Typography>
-                                            {item.id + 1}. {item.title}
-                                        </Typography>
-                                        <Controller
-                                            name={makeId(item.title, item.id)}
-                                            control={control}
-                                            render={({ field }) => (
-                                                <TextField
-                                                    multiline={true}
-                                                    maxRows={4}
-                                                    label={item.title}
-                                                    required={item.required}
-                                                    inputProps={{
-                                                        inputMode: "numeric",
-                                                        pattern: "[0-9]*",
-                                                    }}
-                                                    {...field}
-                                                />
-                                            )}
-                                        />
-                                    </>
-                                );
-                            case "radio":
-                                return (
-                                    <>
-                                        <Typography>
-                                            {item.id + 1}. {item.title}
-                                        </Typography>
-                                        <Controller
-                                            name={makeId(item.title, item.id)}
-                                            control={control}
-                                            render={({ field }) => (
-                                                <FormControl {...field}>
-                                                    <FormLabel>
-                                                        {item.title}
-                                                    </FormLabel>
-                                                    <RadioGroup name="radio-buttons-group">
-                                                        {item.options?.map(
-                                                            (item) => {
-                                                                return (
-                                                                    <FormControlLabel
-                                                                        value={
-                                                                            item.value
-                                                                        }
-                                                                        control={
-                                                                            <Radio />
-                                                                        }
-                                                                        label={
-                                                                            item.value
-                                                                        }
-                                                                    />
-                                                                );
-                                                            }
-                                                        )}
-                                                    </RadioGroup>
-                                                </FormControl>
-                                            )}
-                                        />
-                                    </>
-                                );
-                            case "checkbox":
-                                return (
-                                    <>
-                                        <Typography>
-                                            {item.id + 1}. {item.title}
-                                        </Typography>
-                                        {/* <FormControlLabel
-                                            control={
-                                                <Controller
-                                                    name="multiCheckbox.option1"
-                                                    control={control}
-                                                    render={({ field }) => (
-                                                        <Checkbox {...field} />
-                                                    )}
-                                                />
-                                            }
-                                            label="option 1"
-                                        /> */}
-                                        {item.options?.map((item, i) => {
-                                            console.log(item);
-                                            return (
-                                                <FormControlLabel
-                                                    control={
-                                                        <Controller
-                                                            name={makeId(
-                                                                item.value,
-                                                                item.id
-                                                            )}
-                                                            control={control}
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <Checkbox
-                                                                    {...field}
-                                                                />
-                                                            )}
-                                                        />
-                                                    }
-                                                    label={item.value}
-                                                />
-                                            );
-                                        })}
-                                    </>
-                                );
-                            case "date":
-                                return (
-                                    <>
-                                        <Typography>
-                                            {item.id + 1}. {item.title}
-                                        </Typography>
-                                        <Controller
-                                            name={makeId(item.title, item.id)}
-                                            control={control}
-                                            render={({ field }) => (
-                                                <DatePicker
-                                                    label={item.title}
-                                                    required={item.required}
-                                                    {...field}></DatePicker>
-                                            )}
-                                        />
-                                    </>
-                                );
-                            case "time":
-                                return (
-                                    <>
-                                        <Typography>
-                                            {item.id + 1}. {item.title}
-                                        </Typography>
-                                        <Controller
-                                            name={makeId(item.title, item.id)}
-                                            control={control}
-                                            render={({ field }) => (
-                                                <TimePicker
-                                                    label={item.title}
-                                                    required={item.required}
-                                                    {...field}></TimePicker>
-                                            )}
-                                        />
-                                    </>
-                                );
-                            default:
-                                return <Fragment></Fragment>;
-                        }
-                    })}
-                    <Button type="submit" variant="contained">
-                        Отправить
-                    </Button>
-                </Stack>
-            </form>
+        <Box>
+            <Box width={800} marginBottom={5} marginX="auto">
+                <Typography variant="h4">{title}</Typography>
+                <Typography variant="body1">
+                    {description}
+                </Typography>
+                <Button variant="contained" sx={{ position: "absolute", top: "20px", right: "20px" }} onClick={() => setIsMultiForm(!isMultiForm)}>
+                    {"Переключить вид"}
+                    {/* {isMultiForm ? <CropLandscapeIcon /> : <CropPortraitIcon />} */}
+                </Button>
+            </Box>
+            {isMultiForm ?
+                <MultiFormView
+                    data={data}
+                    onSubmit={onSubmit}
+                /> :
+                <DefaultFormView
+                    data={data}
+                    onSubmit={onSubmit}
+                />}
         </Box>
     );
 };

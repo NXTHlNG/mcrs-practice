@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import { Routes, Route } from "react-router-dom";
 import FormBuilder from "@components/FormBuilder";
 import MainPage from "./components/MainPage/MainPage";
@@ -25,7 +24,7 @@ const App = () => {
                 element={<AnswersPage />}
             />
             <Route path="/form/:alias" element={<FormPage />} />
-            <Route path="/form/response" element={<FormResponse />} />
+            <Route path="/form/response/:alias" element={<FormResponse />} />
         </Routes>
     );
 };

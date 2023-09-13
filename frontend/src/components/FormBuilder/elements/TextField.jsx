@@ -16,20 +16,18 @@ import TextField from "@material-ui/core/TextField";
 import Tooltip from "@material-ui/core/Tooltip";
 //Icons
 import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
-import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 //Form Elements
 import { formEl } from "../constants";
 
-const TextFieldInput = ({ item, handleValue, deleteEl, handleRequired, handleElType,duplicateElement }) => {
+const TextFieldInput = ({ item, handleValue, deleteEl, handleRequired, handleElType, duplicateElement, depth, handler }) => {
   return (
     <Fragment>
       <Paper elevation={1}>
         <Box sx={{ textAlign: "center" }}>
-          <DragIndicatorIcon
-            sx={{ transform: "rotate(-90deg)", cursor: "all-scroll" }}
-          />
+          {handler}
+
         </Box>
         <Box sx={{ p: 3 }}>
           <Grid container spacing={1}>
@@ -58,14 +56,15 @@ const TextFieldInput = ({ item, handleValue, deleteEl, handleRequired, handleElT
                   id="el-type"
                   label="Type"
                   value={item.type}
-                  onChange={(e)=>handleElType(item.id,e.target.value)}
+                  onChange={(e) => handleElType(item.id, e.target.value)}
                 >
                   {formEl &&
-                    formEl.map((el, key) => (
-                      <MenuItem key={key} value={el.value}>
-                        {el.label}
-                      </MenuItem>
-                    ))}
+                    formEl.map((el, key) => {
+                      return el.value == "multi" && depth !== 0 ? null :
+                        <MenuItem key={key} value={el.value}>
+                          {el.label}
+                        </MenuItem>
+                    })}
                 </Select>
               </FormControl>
             </Grid>

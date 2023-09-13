@@ -28,6 +28,7 @@ export const FormService = {
 
     async getAnswers(formId) {
         const res = await axios.get(`${baseURL}/answer/${formId}`);
+        console.log(res.data)
         return res.data;
     },
 
@@ -37,6 +38,7 @@ export const FormService = {
     },
 
     async create(form) {
+        console.log(form)
         const res = await axios.post(`${baseURL}/form`, form);
         return res.data;
     },
@@ -47,7 +49,18 @@ export const FormService = {
     },
 
     async answer(data) {
-        const res = await axios.post(`${baseURL}/answer`, data);
+        console.log(data)
+        const res = await axios.post(`${baseURL}/answer/all`, data);
+        return res.data;
+    },
+
+    async updateAnswer(data, answerId) {
+        const res = await axios.put(`${baseURL}/answer/${answerId}`, data);
+        return res.data;
+    },
+
+    async deleteAnswer(answerId) {
+        const res = await axios.delete(`${baseURL}/answer/${answerId}`);
         return res.data;
     },
 

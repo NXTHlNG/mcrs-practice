@@ -34,12 +34,14 @@ const RadioInput = ({
   addOption,
   handleOptionValues,
   deleteOption,
-  duplicateElement
+  duplicateElement,
+  depth,
+  handler
 }) => {
 
   //Create new option
   const createNewOption = (id) => {
-    console.log(id,typeof(id),"this is id")
+    console.log(id, typeof (id), "this is id")
     const data = {
       id: uuid(),
       value: "",
@@ -51,9 +53,7 @@ const RadioInput = ({
     <Fragment>
       <Paper elevation={1}>
         <Box sx={{ textAlign: "center" }}>
-          <DragIndicatorIcon
-            sx={{ transform: "rotate(-90deg)", cursor: "all-scroll" }}
-          />
+          {handler}
         </Box>
         <Box sx={{ p: 3 }}>
           <Grid container spacing={1}>
@@ -70,7 +70,7 @@ const RadioInput = ({
               {item.options &&
                 item.options.length > 0 &&
                 item.options.map((opt, key) => (
-                  <Box sx={{display:'flex'}}>
+                  <Box key={key} sx={{ display: 'flex' }}>
                     <TextField
                       variant="outlined"
                       fullWidth
@@ -85,7 +85,7 @@ const RadioInput = ({
                     <Tooltip title="Удалить вариант" aria-label="delete-option">
                       <IconButton
                         aria-label="delete-option"
-                        onClick={() => deleteOption(item.id,opt?.id)}
+                        onClick={() => deleteOption(item.id, opt?.id)}
                         sx={{ ml: 2 }}
                       >
                         <DeleteOutlineOutlinedIcon color="secondary" />
@@ -108,11 +108,12 @@ const RadioInput = ({
                   onChange={(e) => handleElType(item.id, e.target.value)}
                 >
                   {formEl &&
-                    formEl.map((el, key) => (
-                      <MenuItem key={key} value={el.value}>
-                        {el.label}
-                      </MenuItem>
-                    ))}
+                    formEl.map((el, key) => {
+                      return el.value == "multi" && depth !== 0 ? null :
+                        <MenuItem key={key} value={el.value}>
+                          {el.label}
+                        </MenuItem>
+                    })}
                 </Select>
               </FormControl>
             </Grid>
@@ -132,7 +133,7 @@ const RadioInput = ({
           <Tooltip title="Дублировать элемент" aria-label="duplicate-element">
             <IconButton
               aria-label="duplicate-element"
-              onClick={() => duplicateElement(item.id,item.type)}
+              onClick={() => duplicateElement(item.id, item.type)}
               sx={{ ml: 2 }}
             >
               <FileCopyIcon color="secondary" />

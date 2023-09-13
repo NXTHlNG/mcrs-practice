@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - dbdata:/data/db
+
+  backend:
+    container_name: backend
+    image: backend
+    restart: always
+    env_file:
+      - .env
+
+  nginx:
+    container_name: nginx
+    image: nginx
+    restart: always
+    ports:
+      - "80:80"
+
+volumes:
+  dbdata:

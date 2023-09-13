@@ -1,12 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormService } from "../../services/FormService";
 import { Grid, IconButton, Paper } from "@material-ui/core";
-import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import FormCard from "./elements/FormCard";
 import AddIcon from "@mui/icons-material/Add";
-import { redirect, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -15,7 +13,7 @@ const MainPage = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
 
     const onEdit = (alias) => {
         navigate(`/admin/form/edit/${alias}`);
@@ -79,7 +77,6 @@ const MainPage = () => {
                     setForms((prevState) => [...data, ...prevState]);
                 }
             } catch (err) {
-                console.log(err);
                 enqueueSnackbar("Ошибка загрузки форм", {
                     variant: "error",
                 });

@@ -14,6 +14,9 @@ const (
 type checkboxAnswer []string
 
 func (c checkboxAnswer) String() string {
+	if len(c) == 0 {
+		return ""
+	}
 	var res string
 
 	for _, a := range c[:len(c)-1] {
@@ -80,7 +83,9 @@ func ToExcel(answers []model.Answer) (string, error) {
 
 			err = json.Unmarshal(item.Value, &multiAnswers)
 			if err != nil {
-				return "", fmt.Errorf("failed encoding json: %v", err)
+				fmt.Println(err)
+				continue
+				// return "",
 			}
 
 			v, err := excelize.CoordinatesToCellName(i+columnOffset+len(multiAnswers)-1, rowOffset)
@@ -122,7 +127,8 @@ func ToExcel(answers []model.Answer) (string, error) {
 				err := json.Unmarshal(item.Value, &multiAnswers)
 
 				if err != nil {
-					return "", fmt.Errorf("failed encoding json: %v", err)
+					fmt.Println(fmt.Errorf("failed encoding json: %v", err))
+					continue
 				}
 
 				for k, a := range multiAnswers {
@@ -133,7 +139,8 @@ func ToExcel(answers []model.Answer) (string, error) {
 						err := json.Unmarshal(a.Value, &answers)
 
 						if err != nil {
-							return "", fmt.Errorf("failed encoding json: %v", err)
+							fmt.Println(fmt.Errorf("failed encoding json: %v", err))
+							continue
 						}
 
 						cell, _ := excelize.CoordinatesToCellName(j+k+columnOffset, i+rowOffset)
@@ -145,7 +152,8 @@ func ToExcel(answers []model.Answer) (string, error) {
 						err := json.Unmarshal(a.Value, &v)
 
 						if err != nil {
-							return "", fmt.Errorf("failed encoding json: %v", err)
+							fmt.Println(fmt.Errorf("failed encoding json: %v", err))
+							continue
 						}
 
 						cell, _ := excelize.CoordinatesToCellName(j+k+columnOffset, i+rowOffset)
@@ -162,7 +170,8 @@ func ToExcel(answers []model.Answer) (string, error) {
 				err := json.Unmarshal(item.Value, &answers)
 
 				if err != nil {
-					return "", fmt.Errorf("failed encoding json: %v", err)
+					fmt.Println(fmt.Errorf("failed encoding json: %v", err))
+					continue
 				}
 
 				cell, _ := excelize.CoordinatesToCellName(j+columnOffset, i+rowOffset)
@@ -173,7 +182,8 @@ func ToExcel(answers []model.Answer) (string, error) {
 				err := json.Unmarshal(item.Value, &v)
 
 				if err != nil {
-					return "", fmt.Errorf("failed encoding json: %v", err)
+					fmt.Println(fmt.Errorf("failed encoding json: %v", err))
+					continue
 				}
 
 				cell, _ := excelize.CoordinatesToCellName(j+columnOffset, i+rowOffset)

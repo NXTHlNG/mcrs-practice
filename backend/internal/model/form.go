@@ -54,4 +54,5 @@ type Option struct {
 	Title    string   `json:"title" bson:"title" binding:"required"`
 	Type     ItemType `json:"type" bson:"type" binding:"required"`
 	Required bool     `json:"required" bson:"required:" binding:"required"`
+	Options  []Option `json:"options" bson:"options"`
 }
