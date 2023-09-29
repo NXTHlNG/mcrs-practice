@@ -14,13 +14,13 @@ import Select from "@material-ui/core/Select";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import Tooltip from "@material-ui/core/Tooltip";
-import AdapterDateFns from "@material-ui/lab/AdapterDateFns";
-import DatePicker from "@material-ui/lab/DatePicker";
-import LocalizationProvider from "@material-ui/lab/LocalizationProvider";
 //Icons
 import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
-import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/ru';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 //Form Elements
 import { formEl } from "../constants";
@@ -54,8 +54,9 @@ const DateInput = ({
                 placeholder="Заголовок"
                 sx={{ mb: 2 }}
               />
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
                 <DatePicker
+                  slotProps={{ textField: { fullWidth: true } }}
                   label="Выберите дату"
                   value={item?.date}
                   onChange={(newDate) => { handleDate(item.id, newDate); }}

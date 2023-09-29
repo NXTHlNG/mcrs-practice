@@ -24,8 +24,6 @@ func New(uri, username, password string) *Storage {
 		Password: password,
 	}))
 
-	// client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
-
 	if err != nil {
 		log.Printf("try connect to mongo: %v", err)
 		os.Exit(1)

@@ -10,9 +10,12 @@ import {
 import MenuItem from '@mui/material/MenuItem';
 import { useForm, Controller } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { TimePicker } from "@mui/x-date-pickers";
 import ClearIcon from '@mui/icons-material/Clear';
 import AddIcon from "@mui/icons-material/Add";
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { ruRU } from '@mui/x-date-pickers/locales';
+import 'dayjs/locale/ru';
 
 
 const defaultMakeId = (title, i, id, type) => {
@@ -189,12 +192,15 @@ const MultiFormView = ({ data, onSubmit }) => {
                         name={makeId(item.title, item.id, item.type)}
                         control={control}
                         render={({ field }) => (
-                            <DatePicker
-                                slotProps={{ textField: { fullWidth: true } }}
-                                label={item.title}
-                                required={item.required}
-                                {...field}>
-                            </DatePicker>
+                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
+                                <DatePicker
+                                    localeText={ruRU.components.MuiLocalizationProvider.defaultProps.localeText}
+                                    slotProps={{ textField: { fullWidth: true } }}
+                                    label={item.title}
+                                    required={item.required}
+                                    {...field}>
+                                </DatePicker>
+                            </LocalizationProvider>
                         )}
                     />
                 break
@@ -204,11 +210,14 @@ const MultiFormView = ({ data, onSubmit }) => {
                         name={makeId(item.title, item.id, item.type)}
                         control={control}
                         render={({ field }) => (
-                            <TimePicker
-                                slotProps={{ textField: { fullWidth: true } }}
-                                label={item.title}
-                                required={item.required}
-                                {...field}></TimePicker>
+                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
+                                <TimePicker
+                                    localeText={ruRU.components.MuiLocalizationProvider.defaultProps.localeText}
+                                    slotProps={{ textField: { fullWidth: true } }}
+                                    label={item.title}
+                                    required={item.required}
+                                    {...field}></TimePicker>
+                            </LocalizationProvider>
                         )}
                     />
                 break

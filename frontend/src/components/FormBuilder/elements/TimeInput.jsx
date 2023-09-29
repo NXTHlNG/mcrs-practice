@@ -14,9 +14,10 @@ import Select from "@material-ui/core/Select";
 import Switch from "@material-ui/core/Switch";
 import TextField from "@material-ui/core/TextField";
 import Tooltip from "@material-ui/core/Tooltip";
-import AdapterDateFns from "@material-ui/lab/AdapterDateFns";
-import LocalizationProvider from "@material-ui/lab/LocalizationProvider";
-import TimePicker from "@material-ui/lab/TimePicker";
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/ru';
+import { TimePicker } from "@mui/x-date-pickers";
 //Icons
 import DeleteOutlineOutlinedIcon from "@material-ui/icons/DeleteOutlineOutlined";
 import DragIndicatorIcon from "@material-ui/icons/DragIndicator";
@@ -54,8 +55,11 @@ const TimeInput = ({
                 placeholder="Заголовок"
                 sx={{ mb: 2 }}
               />
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
                 <TimePicker
+                  slotProps={{ textField: { fullWidth: true } }}
+                  ampm={false}
+                  ampmInClock={false}
                   label="Выберите время"
                   value={item?.time}
                   onChange={(newTime) => handleTime(item.id, newTime)}

@@ -9,7 +9,10 @@ import {
 import MenuItem from '@mui/material/MenuItem';
 import { useForm, Controller } from "react-hook-form";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { TimePicker } from "@mui/x-date-pickers";
+import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { ruRU } from '@mui/x-date-pickers/locales';
+import 'dayjs/locale/ru';
 
 const defaultMakeId = (title, i, id, type) => {
     let newTitle = title.replaceAll(",", "★").replaceAll(".", "✳")
@@ -179,10 +182,13 @@ const DefaultFormView = ({ data, onSubmit }) => {
                             name={makeId(item.title, item.id, item.type)}
                             control={control}
                             render={({ field }) => (
-                                <DatePicker
-                                    label={item.title}
-                                    required={item.required}
-                                    {...field}></DatePicker>
+                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
+                                    <DatePicker
+                                        localeText={ruRU.components.MuiLocalizationProvider.defaultProps.localeText}
+                                        label={item.title}
+                                        required={item.required}
+                                        {...field}></DatePicker>
+                                </LocalizationProvider>
                             )}
                         />
                     </>
@@ -197,10 +203,16 @@ const DefaultFormView = ({ data, onSubmit }) => {
                             name={makeId(item.title, item.id, item.type)}
                             control={control}
                             render={({ field }) => (
-                                <TimePicker
-                                    label={item.title}
-                                    required={item.required}
-                                    {...field}></TimePicker>
+                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ru">
+                                    <TimePicker
+                                        localeText={ruRU.components.MuiLocalizationProvider.defaultProps.localeText}
+                                        ampm={false}
+                                        ampmInClock={false}
+                                        label={item.title}
+                                        required={item.required}
+                                        {...field}></TimePicker>
+                                </LocalizationProvider>
+
                             )}
                         />
                     </>

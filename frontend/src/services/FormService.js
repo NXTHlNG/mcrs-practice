@@ -65,11 +65,9 @@ export const FormService = {
     },
 
     async download(formId) {
-        console.log(formId);
         const res = await axios.get(`${baseURL}/statistics/${formId}`, {
             responseType: "blob",
         });
-        console.log(res);
         const href = window.URL.createObjectURL(res.data);
 
         const anchorElement = document.createElement("a");
