@@ -28,7 +28,7 @@ const MainPage = () => {
             const textArea = document.createElement("textarea");
             textArea.style.position = "absolute";
             textArea.style.left = "-999999px";
-            textArea.value = `${window.location.host}/form/${alias}`;
+            textArea.value = `${window.location.protocol}//${window.location.host}/form/${alias}`;
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
