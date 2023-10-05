@@ -22,7 +22,7 @@ const MainPage = () => {
     const onShare = (alias) => {
         try {
             navigator.clipboard.writeText(
-                `${window.location.host}/form/${alias}`
+                `${window.location.protocol}//${window.location.host}/form/${alias}`
             );
         } catch (err) {
             const textArea = document.createElement("textarea");
